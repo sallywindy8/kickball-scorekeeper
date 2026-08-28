@@ -288,14 +288,6 @@ function Index() {
         >
           Final inning (no run cap)
         </label>
-        <button
-          type="button"
-          className="rounded-lg bg-background px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground shadow-sm transition-colors active:bg-background/70 disabled:opacity-40"
-          onClick={resetBSF}
-          disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
-        >
-          Reset B/S/F
-        </button>
         <input
           id="final-inning"
           type="checkbox"
@@ -304,6 +296,17 @@ function Index() {
           disabled={state.inning >= 7}
           onChange={(e) => setFinalInning(e.target.checked)}
         />
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          type="button"
+          className="rounded-lg bg-muted px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground shadow-sm transition-colors active:bg-muted/70 disabled:opacity-40"
+          onClick={resetBSF}
+          disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
+        >
+          Reset B/S/F Count
+        </button>
       </div>
 
       {overtime && (
