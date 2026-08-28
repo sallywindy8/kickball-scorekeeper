@@ -10,7 +10,7 @@ export default defineConfig({
   vite: {
     // Base path for static hosting (e.g. GitHub Pages project sites served
     // from /<repo-name>/). Defaults to "/" for local dev and Lovable preview.
-    base: process.env.VITE_BASE_PATH ?? "/",
+    base: process.env["VITE_BASE_PATH"] ?? "/",
   },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
