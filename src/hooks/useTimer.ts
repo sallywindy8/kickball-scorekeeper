@@ -1,23 +1,80 @@
 import { useState, useEffect, useCallback } from "react";
 
+const STORAGE_KEY = "kickball-timer";
+
+interface TimerState {
+  /** Seconds banked before the current run. */
+  accumulated: number;
+  /** Epoch ms the current run started, or null when paused. */
+  runningSince: number | null;
+}
+
+const initialTimer: TimerState = { accumulated: 0, runningSince: null };
+
+function loadTimer(): TimerState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<TimerState>;
+    if (typeof parsed.accumulated !== "number") return null;
+    return {
+      accumulated: parsed.accumulated,
+      runningSince: typeof parsed.runningSince === "number" ? parsed.runningSince : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+const elapsed = (t: TimerState) =>
+  Math.max(
+    0,
+    Math.floor(t.accumulated + (t.runningSince ? (Date.now() - t.runningSince) / 1000 : 0)),
+  );
+
 export function useTimer() {
+  const [timer, setTimer] = useState<TimerState>(initialTimer);
+  const [hydrated, setHydrated] = useState(false);
   const [seconds, setSeconds] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
+
+  // Restore a running clock after a refresh or app switch.
+  useEffect(() => {
+    const saved = loadTimer();
+    if (saved) {
+      setTimer(saved);
+      setSeconds(elapsed(saved));
+    }
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
-    if (!isRunning) return;
+    if (!hydrated || typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(timer));
+    } catch {
+      /* storage unavailable — keep running in memory */
+    }
+  }, [timer, hydrated]);
 
-    const interval = setInterval(() => {
-      setSeconds((s) => s + 1);
-    }, 1000);
-
+  // Tick from wall-clock time so a backgrounded tab stays accurate.
+  useEffect(() => {
+    setSeconds(elapsed(timer));
+    if (!timer.runningSince) return;
+    const interval = setInterval(() => setSeconds(elapsed(timer)), 500);
     return () => clearInterval(interval);
-  }, [isRunning]);
+  }, [timer]);
 
-  const start = useCallback(() => setIsRunning(true), []);
-  const pause = useCallback(() => setIsRunning(false), []);
+  const start = useCallback(() => {
+    setTimer((t) => (t.runningSince ? t : { ...t, runningSince: Date.now() }));
+  }, []);
+
+  const pause = useCallback(() => {
+    setTimer((t) => (t.runningSince ? { accumulated: elapsed(t), runningSince: null } : t));
+  }, []);
+
   const reset = useCallback(() => {
-    setIsRunning(false);
+    setTimer(initialTimer);
     setSeconds(0);
   }, []);
 
@@ -27,7 +84,7 @@ export function useTimer() {
 
   return {
     seconds,
-    isRunning,
+    isRunning: timer.runningSince !== null,
     formattedTime,
     start,
     pause,

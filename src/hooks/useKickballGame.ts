@@ -33,6 +33,8 @@ export interface GameState {
   strikes: number;
   fouls: number;
   outs: number;
+  /** Consecutive balls in the current at-bat (streak breaks on strike/foul). */
+  ballStreak: number;
   isGameOver: boolean;
   /** Ump-flagged (or clock-forced) final inning: suspends the 7-run cap. */
   finalInning: boolean;
@@ -65,6 +67,7 @@ const initialState: GameState = {
   strikes: 0,
   fouls: 0,
   outs: 0,
+  ballStreak: 0,
   isGameOver: false,
   finalInning: false,
   flash: null,
@@ -93,7 +96,15 @@ function endFlash(prev: GameState): Flash {
 
 /** Advance past the current half-inning, clearing the count. */
 function advanceHalf(prev: GameState): GameState {
-  const cleared = { ...prev, balls: 0, strikes: 0, fouls: 0, outs: 0, prompt: null };
+  const cleared = {
+    ...prev,
+    balls: 0,
+    strikes: 0,
+    fouls: 0,
+    outs: 0,
+    ballStreak: 0,
+    prompt: null,
+  };
   if (prev.halfInning === "top") {
     return { ...cleared, halfInning: "bottom" };
   }
@@ -162,9 +173,32 @@ function withRulePrompt(next: GameState): GameState {
   return next;
 }
 
+const STORAGE_KEY = "kickball-game-state";
+
+function loadState(): GameState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<GameState>;
+    if (!Array.isArray(parsed.awayRuns) || !Array.isArray(parsed.homeRuns)) return null;
+    return { ...initialState, ...parsed, flash: null, prompt: null };
+  } catch {
+    return null;
+  }
+}
+
 export function useKickballGame() {
   const [state, setState] = useState<GameState>(initialState);
   const [history, setHistory] = useState<GameState[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Restore any game in progress after a refresh / app switch.
+  useEffect(() => {
+    const saved = loadState();
+    if (saved) setState(saved);
+    setHydrated(true);
+  }, []);
 
   // Ref mirror of state so history pushes happen outside the setState
   // updater (updaters are double-invoked in dev, which broke undo).
@@ -172,6 +206,16 @@ export function useKickballGame() {
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
+
+  // Persist every change so a refresh, lock screen, or app switch keeps the game.
+  useEffect(() => {
+    if (!hydrated || typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      /* storage unavailable — keep playing in memory */
+    }
+  }, [state, hydrated]);
 
   const apply = useCallback((updater: (prev: GameState) => GameState) => {
     const prev = stateRef.current;
@@ -210,14 +254,22 @@ export function useKickballGame() {
     apply((prev) => {
       if (prev.isGameOver) return prev;
       const nextBalls = prev.balls + 1;
+      const nextStreak = prev.ballStreak + 1;
       if (nextBalls >= 4) {
+        // Four consecutive balls in one at-bat is a two-base walk.
+        const twoBases = nextStreak >= 4;
         return {
           ...prev,
           balls: 0,
-          flash: { counter: "balls", text: "Walk", tone: "green" },
+          ballStreak: 0,
+          flash: {
+            counter: "balls",
+            text: twoBases ? "Walk - 2 Bases" : "Walk - 1 Base",
+            tone: "green",
+          },
         };
       }
-      return { ...prev, balls: nextBalls };
+      return { ...prev, balls: nextBalls, ballStreak: nextStreak };
     });
   }, [apply]);
 
@@ -226,16 +278,27 @@ export function useKickballGame() {
   }, []);
 
   const removeBall = useCallback(() => {
-    apply((prev) => ({ ...prev, balls: Math.max(0, prev.balls - 1) }));
+    apply((prev) => ({
+      ...prev,
+      balls: Math.max(0, prev.balls - 1),
+      ballStreak: Math.max(0, prev.ballStreak - 1),
+    }));
   }, [apply]);
 
   const addStrike = useCallback(() => {
     apply((prev) => {
       if (prev.isGameOver) return prev;
       const nextStrikes = prev.strikes + 1;
+      prev = { ...prev, ballStreak: 0 };
       if (nextStrikes >= 3) {
         // Strike-out: reset balls, strikes, and fouls for the next batter.
-        const { state: next, halfEnded } = addOutImpl({ ...prev, balls: 0, strikes: 0, fouls: 0 });
+        const { state: next, halfEnded } = addOutImpl({
+          ...prev,
+          balls: 0,
+          strikes: 0,
+          fouls: 0,
+          ballStreak: 0,
+        });
         return {
           ...next,
           flash: halfEnded
@@ -255,9 +318,16 @@ export function useKickballGame() {
     apply((prev) => {
       if (prev.isGameOver) return prev;
       const nextFouls = prev.fouls + 1;
+      prev = { ...prev, ballStreak: 0 };
       if (nextFouls >= MAX_FOULS) {
         // Foul-out: reset balls, strikes, and fouls for the next batter.
-        const { state: next, halfEnded } = addOutImpl({ ...prev, balls: 0, strikes: 0, fouls: 0 });
+        const { state: next, halfEnded } = addOutImpl({
+          ...prev,
+          balls: 0,
+          strikes: 0,
+          fouls: 0,
+          ballStreak: 0,
+        });
         return {
           ...next,
           flash: halfEnded
@@ -321,7 +391,7 @@ export function useKickballGame() {
   const resetBSF = useCallback(() => {
     apply((prev) => {
       if (prev.balls === 0 && prev.strikes === 0 && prev.fouls === 0) return prev;
-      return { ...prev, balls: 0, strikes: 0, fouls: 0 };
+      return { ...prev, balls: 0, strikes: 0, fouls: 0, ballStreak: 0 };
     });
   }, [apply]);
 
@@ -354,9 +424,8 @@ export function useKickballGame() {
         ...prev,
         prompt: {
           kind: "time55",
-          title: "55 minute mark",
-          description:
-            "The current inning has passed 55 minutes. Revert the score to the last completed inning and end the game, or keep playing?",
+          title: "55 MIN REACHED",
+          description: "End game and revert to previous inning score?",
         },
         answered: [...prev.answered, "time55"],
       };
@@ -416,6 +485,13 @@ export function useKickballGame() {
   const newGame = useCallback(() => {
     setState(initialState);
     setHistory([]);
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.removeItem(STORAGE_KEY);
+      } catch {
+        /* ignore */
+      }
+    }
   }, []);
 
   return {
