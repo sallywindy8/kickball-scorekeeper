@@ -414,7 +414,7 @@ export function useKickballGame() {
   const resetBSF = useCallback(() => {
     apply((prev) => {
       if (prev.balls === 0 && prev.strikes === 0 && prev.fouls === 0) return prev;
-      return { ...prev, balls: 0, strikes: 0, fouls: 0, ballStreak: 0 };
+      return { ...prev, balls: 0, strikes: 0, fouls: 0, pitchLog: [] };
     });
   }, [apply]);
 
