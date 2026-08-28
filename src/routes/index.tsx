@@ -89,12 +89,10 @@ function Index() {
   // Fail-safe: if the ump starts counting/scoring before starting the timer,
   // nudge them once per action until the clock is running.
   const [timerReminder, setTimerReminder] = useState(false);
-  const guardTimer =
-    (action: () => void) =>
-    () => {
-      if (!timerStarted && !state.isGameOver) setTimerReminder(true);
-      action();
-    };
+  const guardTimer = (action: () => void) => () => {
+    if (!timerStarted && !state.isGameOver) setTimerReminder(true);
+    action();
+  };
 
   // Warn umpires if they accidentally refresh mid-game.
   useEffect(() => {
@@ -279,7 +277,9 @@ function Index() {
           color={state.awayColor}
           onNameChange={setAwayTeam}
           onColorChange={setAwayColor}
-          onAdjustScore={(d) => (d > 0 ? guardTimer(() => adjustAwayScore(d))() : adjustAwayScore(d))}
+          onAdjustScore={(d) =>
+            d > 0 ? guardTimer(() => adjustAwayScore(d))() : adjustAwayScore(d)
+          }
           disabled={state.isGameOver}
           isKicking={state.halfInning === "top"}
           dimInactive={timerStarted}
@@ -291,7 +291,9 @@ function Index() {
           color={state.homeColor}
           onNameChange={setHomeTeam}
           onColorChange={setHomeColor}
-          onAdjustScore={(d) => (d > 0 ? guardTimer(() => adjustHomeScore(d))() : adjustHomeScore(d))}
+          onAdjustScore={(d) =>
+            d > 0 ? guardTimer(() => adjustHomeScore(d))() : adjustHomeScore(d)
+          }
           disabled={state.isGameOver}
           isKicking={state.halfInning === "bottom"}
           dimInactive={timerStarted}
