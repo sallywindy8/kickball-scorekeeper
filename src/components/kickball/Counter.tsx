@@ -29,20 +29,19 @@ export function Counter({
   const isAtMax = max !== undefined && value >= max;
   const isOut = variant === "out";
   const dotCount = max ?? 3;
+  const fillColor = isOut ? "bg-red-600" : "bg-red-600";
 
   return (
     <div
       className={cn(
         "relative flex h-full flex-col items-center justify-center gap-1 rounded-3xl border p-2 shadow-sm",
-        isOut
-          ? "border-red-500 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.25)]"
-          : "border-border bg-card",
+        isOut ? "border-red-200 bg-red-50" : "border-border bg-card",
       )}
     >
       <span
         className={cn(
           "text-base font-black uppercase tracking-[0.14em]",
-          isOut ? "text-red-100" : "text-muted-foreground",
+          isOut ? "text-red-600" : "text-muted-foreground",
         )}
       >
         {label}
@@ -51,7 +50,7 @@ export function Counter({
         <span
           className={cn(
             "text-5xl font-black tabular-nums",
-            isOut ? "text-white" : "text-foreground",
+            isOut ? "text-red-600" : "text-foreground",
           )}
         >
           {value}
@@ -61,7 +60,7 @@ export function Counter({
             role="status"
             className={cn(
               "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-3 py-1 text-sm font-black uppercase tracking-widest text-white shadow-lg",
-              badgeTone === "red" ? "bg-red-700" : "bg-green-600",
+              badgeTone === "red" ? "bg-red-600" : "bg-green-600",
             )}
           >
             {badge}
@@ -76,13 +75,7 @@ export function Counter({
             key={i}
             className={cn(
               "h-2.5 w-2.5 rounded-full border transition-colors",
-              i < value
-                ? isOut
-                  ? "border-transparent bg-white"
-                  : "border-transparent bg-red-600"
-                : isOut
-                  ? "border-red-300/60 bg-red-800/40"
-                  : "border-gray-400 bg-white",
+              i < value ? cn(fillColor, "border-transparent") : "border-gray-400 bg-white",
             )}
             aria-hidden="true"
           />
@@ -95,7 +88,7 @@ export function Counter({
           className={cn(
             "flex h-14 w-14 items-center justify-center rounded-full transition-colors disabled:opacity-40",
             isOut
-              ? "bg-white/20 text-white active:bg-white/30"
+              ? "bg-red-100 text-red-600 active:bg-red-200"
               : "bg-muted text-foreground active:bg-muted/70",
           )}
           onClick={onRemove}
@@ -109,7 +102,7 @@ export function Counter({
           className={cn(
             "flex h-14 w-14 items-center justify-center rounded-full shadow-md transition-colors disabled:opacity-40",
             isOut
-              ? "bg-white/20 text-white active:bg-white/30"
+              ? "bg-red-600 text-white shadow-red-200 active:bg-red-700"
               : "bg-primary text-primary-foreground active:bg-primary/90",
           )}
           onClick={onAdd}
