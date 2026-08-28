@@ -339,7 +339,6 @@ function Index() {
         </p>
       )}
 
-
       <section className="grid flex-1 grid-cols-2 gap-2">
         <Counter
           label="Balls"
