@@ -313,7 +313,9 @@ function Index() {
             htmlFor="final-inning"
             className="text-[11px] font-black uppercase tracking-wider text-muted-foreground"
           >
-            Final inning (no run cap)
+            Final inning
+            <br />
+            (no run cap)
           </label>
           <input
             id="final-inning"
