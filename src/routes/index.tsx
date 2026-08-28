@@ -133,6 +133,11 @@ function Index() {
     if (seconds >= FIFTY_FIVE_MINUTES) notifyFiftyFiveMinutes();
   }, [seconds, notifyFiftyFiveMinutes]);
 
+  // Stop the clock once the game has ended.
+  useEffect(() => {
+    if (state.isGameOver && isRunning) pause();
+  }, [state.isGameOver, isRunning, pause]);
+
   const handleNewGame = () => {
     newGame();
     resetTimer();
@@ -383,7 +388,7 @@ function Index() {
         </div>
         <button
           type="button"
-          className="flex w-1/2 items-center justify-center rounded-xl bg-emerald-600 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-sm transition-colors hover:bg-emerald-700 active:bg-emerald-800"
+          className="flex w-1/2 items-center justify-center rounded-xl bg-emerald-600 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-white shadow-sm transition-colors hover:bg-emerald-700 active:bg-emerald-800"
           onClick={resetBSF}
         >
           Kicker is Safe
