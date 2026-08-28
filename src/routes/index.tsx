@@ -133,6 +133,11 @@ function Index() {
     if (seconds >= FIFTY_FIVE_MINUTES) notifyFiftyFiveMinutes();
   }, [seconds, notifyFiftyFiveMinutes]);
 
+  // Stop the clock once the game has ended.
+  useEffect(() => {
+    if (state.isGameOver && isRunning) pause();
+  }, [state.isGameOver, isRunning, pause]);
+
   const handleNewGame = () => {
     newGame();
     resetTimer();
