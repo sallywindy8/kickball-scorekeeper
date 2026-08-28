@@ -168,7 +168,9 @@ function Index() {
   return (
     <main className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-1.5 bg-background p-2 text-foreground">
       <header className="text-center">
-        <h1 className="text-lg font-black uppercase tracking-widest text-foreground">WAKA Scorekeeping</h1>
+        <h1 className="text-lg font-black uppercase tracking-widest text-foreground">
+          WAKA Scorekeeping
+        </h1>
       </header>
       {overlayFlash && (
         <div
