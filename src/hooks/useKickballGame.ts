@@ -33,8 +33,9 @@ export interface GameState {
   strikes: number;
   fouls: number;
   outs: number;
-  /** Consecutive balls in the current at-bat (streak breaks on strike/foul). */
-  ballStreak: number;
+  /** Ordered pitches in the current at-bat; the walk streak is derived from it
+   *  so erasing a strike/foul restores the true consecutive-ball count. */
+  pitchLog: ("ball" | "strike" | "foul")[];
   isGameOver: boolean;
   /** Ump-flagged (or clock-forced) final inning: suspends the 7-run cap. */
   finalInning: boolean;
@@ -67,7 +68,7 @@ const initialState: GameState = {
   strikes: 0,
   fouls: 0,
   outs: 0,
-  ballStreak: 0,
+  pitchLog: [],
   isGameOver: false,
   finalInning: false,
   flash: null,
@@ -102,7 +103,7 @@ function advanceHalf(prev: GameState): GameState {
     strikes: 0,
     fouls: 0,
     outs: 0,
-    ballStreak: 0,
+    pitchLog: [],
     prompt: null,
   };
   if (prev.halfInning === "top") {
@@ -112,6 +113,20 @@ function advanceHalf(prev: GameState): GameState {
     return { ...cleared, outs: 3, isGameOver: true };
   }
   return { ...cleared, inning: prev.inning + 1, halfInning: "top" };
+}
+
+/** Consecutive balls at the end of the current at-bat's pitch log. */
+function currentBallStreak(log: GameState["pitchLog"]): number {
+  let streak = 0;
+  for (let i = log.length - 1; i >= 0 && log[i] === "ball"; i--) streak++;
+  return streak;
+}
+
+/** Remove the most recent occurrence of a pitch from the log. */
+function removeLast(log: GameState["pitchLog"], pitch: "ball" | "strike" | "foul") {
+  const idx = log.lastIndexOf(pitch);
+  if (idx === -1) return log;
+  return [...log.slice(0, idx), ...log.slice(idx + 1)];
 }
 
 /** Attach a league-rule prompt to the state if one now applies. */
@@ -254,14 +269,14 @@ export function useKickballGame() {
     apply((prev) => {
       if (prev.isGameOver) return prev;
       const nextBalls = prev.balls + 1;
-      const nextStreak = prev.ballStreak + 1;
+      const log = [...prev.pitchLog, "ball" as const];
       if (nextBalls >= 4) {
         // Four consecutive balls in one at-bat is a two-base walk.
-        const twoBases = nextStreak >= 4;
+        const twoBases = currentBallStreak(log) >= 4;
         return {
           ...prev,
           balls: 0,
-          ballStreak: 0,
+          pitchLog: [],
           flash: {
             counter: "balls",
             text: twoBases ? "Walk - 2 Bases" : "Walk - 1 Base",
@@ -269,7 +284,7 @@ export function useKickballGame() {
           },
         };
       }
-      return { ...prev, balls: nextBalls, ballStreak: nextStreak };
+      return { ...prev, balls: nextBalls, pitchLog: log };
     });
   }, [apply]);
 
@@ -281,7 +296,7 @@ export function useKickballGame() {
     apply((prev) => ({
       ...prev,
       balls: Math.max(0, prev.balls - 1),
-      ballStreak: Math.max(0, prev.ballStreak - 1),
+      pitchLog: removeLast(prev.pitchLog, "ball"),
     }));
   }, [apply]);
 
@@ -289,7 +304,7 @@ export function useKickballGame() {
     apply((prev) => {
       if (prev.isGameOver) return prev;
       const nextStrikes = prev.strikes + 1;
-      prev = { ...prev, ballStreak: 0 };
+      prev = { ...prev, pitchLog: [...prev.pitchLog, "strike" as const] };
       if (nextStrikes >= 3) {
         // Strike-out: reset balls, strikes, and fouls for the next batter.
         const { state: next, halfEnded } = addOutImpl({
@@ -297,7 +312,7 @@ export function useKickballGame() {
           balls: 0,
           strikes: 0,
           fouls: 0,
-          ballStreak: 0,
+          pitchLog: [],
         });
         return {
           ...next,
@@ -311,14 +326,18 @@ export function useKickballGame() {
   }, [apply]);
 
   const removeStrike = useCallback(() => {
-    apply((prev) => ({ ...prev, strikes: Math.max(0, prev.strikes - 1) }));
+    apply((prev) => ({
+      ...prev,
+      strikes: Math.max(0, prev.strikes - 1),
+      pitchLog: removeLast(prev.pitchLog, "strike"),
+    }));
   }, [apply]);
 
   const addFoul = useCallback(() => {
     apply((prev) => {
       if (prev.isGameOver) return prev;
       const nextFouls = prev.fouls + 1;
-      prev = { ...prev, ballStreak: 0 };
+      prev = { ...prev, pitchLog: [...prev.pitchLog, "foul" as const] };
       if (nextFouls >= MAX_FOULS) {
         // Foul-out: reset balls, strikes, and fouls for the next batter.
         const { state: next, halfEnded } = addOutImpl({
@@ -326,7 +345,7 @@ export function useKickballGame() {
           balls: 0,
           strikes: 0,
           fouls: 0,
-          ballStreak: 0,
+          pitchLog: [],
         });
         return {
           ...next,
@@ -340,7 +359,11 @@ export function useKickballGame() {
   }, [apply]);
 
   const removeFoul = useCallback(() => {
-    apply((prev) => ({ ...prev, fouls: Math.max(0, prev.fouls - 1) }));
+    apply((prev) => ({
+      ...prev,
+      fouls: Math.max(0, prev.fouls - 1),
+      pitchLog: removeLast(prev.pitchLog, "foul"),
+    }));
   }, [apply]);
 
   const addOut = useCallback(() => {
@@ -391,7 +414,7 @@ export function useKickballGame() {
   const resetBSF = useCallback(() => {
     apply((prev) => {
       if (prev.balls === 0 && prev.strikes === 0 && prev.fouls === 0) return prev;
-      return { ...prev, balls: 0, strikes: 0, fouls: 0, ballStreak: 0 };
+      return { ...prev, balls: 0, strikes: 0, fouls: 0, pitchLog: [] };
     });
   }, [apply]);
 
@@ -449,6 +472,7 @@ export function useKickballGame() {
         strikes: 0,
         fouls: 0,
         outs: 0,
+        pitchLog: [],
         isGameOver: true,
         flash: { counter: "outs", text: "Game Over", overlay: true },
       };
