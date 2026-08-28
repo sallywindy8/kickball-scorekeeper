@@ -75,9 +75,7 @@ export function Counter({
             key={i}
             className={cn(
               "h-2.5 w-2.5 rounded-full border transition-colors",
-              i < value
-                ? cn(fillColor, "border-transparent")
-                : "border-gray-400 bg-white",
+              i < value ? cn(fillColor, "border-transparent") : "border-gray-400 bg-white",
             )}
             aria-hidden="true"
           />
