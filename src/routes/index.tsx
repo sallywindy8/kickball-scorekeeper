@@ -217,66 +217,15 @@ function Index() {
         />
       </section>
 
-      <section className="grid grid-cols-2 gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
-        <div className="flex flex-col items-center gap-1">
-          <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            Score {state.awayTeam}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-12 w-12 rounded-full"
-              onClick={() => adjustAwayScore(-1)}
-              disabled={state.isGameOver || state.awayScore <= 0}
-              aria-label={`Decrease ${state.awayTeam} score`}
-            >
-              <span className="text-xl">-</span>
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-12 w-12 rounded-full"
-              onClick={() => adjustAwayScore(1)}
-              disabled={state.isGameOver}
-              aria-label={`Increase ${state.awayTeam} score`}
-            >
-              <span className="text-xl">+</span>
-            </Button>
-          </div>
-        </div>
-        <div className="flex flex-col items-center gap-1">
-          <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            Score {state.homeTeam}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-12 w-12 rounded-full"
-              onClick={() => adjustHomeScore(-1)}
-              disabled={state.isGameOver || state.homeScore <= 0}
-              aria-label={`Decrease ${state.homeTeam} score`}
-            >
-              <span className="text-xl">-</span>
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-12 w-12 rounded-full"
-              onClick={() => adjustHomeScore(1)}
-              disabled={state.isGameOver}
-              aria-label={`Increase ${state.homeTeam} score`}
-            >
-              <span className="text-xl">+</span>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <Button
+        type="button"
+        variant="outline"
+        className="rounded-xl py-5 text-base font-semibold"
+        onClick={undo}
+        disabled={!canUndo}
+      >
+        <Undo2 className="mr-2 h-5 w-5" /> Undo
+      </Button>
 
       <NewGameDialog onConfirm={handleNewGame} />
     </main>

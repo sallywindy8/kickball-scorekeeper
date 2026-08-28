@@ -11,7 +11,7 @@ interface CounterProps {
   disabled?: boolean;
   variant?: "default" | "outline" | "foul" | "out";
   /** Temporary badge shown over the count, e.g. "Walk" on the 4th ball. */
-  badge?: string;
+  badge?: string | undefined;
 }
 
 export function Counter({
