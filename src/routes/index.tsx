@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Pause, Play, RotateCcw, Undo2 } from "lucide-react";
 
 import { Counter } from "@/components/kickball/Counter";
