@@ -136,34 +136,37 @@ function withRulePrompt(next: GameState): GameState {
   const lead = Math.abs(away - home);
   const leader = away > home ? next.awayTeam || "Away" : next.homeTeam || "Home";
 
-  // Mercy rules take priority over the per-inning run cap.
-  if (next.inning >= 4 && lead >= 15) {
-    const key = `mercy15-${next.inning}-${next.halfInning}-${lead}`;
-    if (!next.answered.includes(key)) {
-      return {
-        ...next,
-        prompt: {
-          kind: "mercy15",
-          title: "Mercy rule: 15-run lead",
-          description: `${leader} leads by ${lead} in the ${ORDINALS[next.inning - 1]} inning. The mercy rule ends the game. End the game now or keep playing?`,
-        },
-        answered: [...next.answered, key],
-      };
+  // Mercy rules take priority over the per-inning run cap — but never in the
+  // final inning, since the trailing team has no run cap and can always come back.
+  if (!isFinal(next)) {
+    if (next.inning >= 4 && lead >= 15) {
+      const key = `mercy15-${next.inning}-${next.halfInning}-${lead}`;
+      if (!next.answered.includes(key)) {
+        return {
+          ...next,
+          prompt: {
+            kind: "mercy15",
+            title: "Mercy rule: 15-run lead",
+            description: `${leader} leads by ${lead} in the ${ORDINALS[next.inning - 1]} inning. The mercy rule ends the game. End the game now or keep playing?`,
+          },
+          answered: [...next.answered, key],
+        };
+      }
     }
-  }
 
-  if (next.inning >= 5 && lead >= 12) {
-    const key = `mercy12-${next.inning}-${next.halfInning}-${lead}`;
-    if (!next.answered.includes(key)) {
-      return {
-        ...next,
-        prompt: {
-          kind: "mercy12",
-          title: "Mercy rule: 12-run lead",
-          description: `${leader} leads by ${lead} in the ${ORDINALS[next.inning - 1]} inning. The mercy rule ends the game. End the game now or keep playing?`,
-        },
-        answered: [...next.answered, key],
-      };
+    if (next.inning >= 5 && lead >= 12) {
+      const key = `mercy12-${next.inning}-${next.halfInning}-${lead}`;
+      if (!next.answered.includes(key)) {
+        return {
+          ...next,
+          prompt: {
+            kind: "mercy12",
+            title: "Mercy rule: 12-run lead",
+            description: `${leader} leads by ${lead} in the ${ORDINALS[next.inning - 1]} inning. The mercy rule ends the game. End the game now or keep playing?`,
+          },
+          answered: [...next.answered, key],
+        };
+      }
     }
   }
 
