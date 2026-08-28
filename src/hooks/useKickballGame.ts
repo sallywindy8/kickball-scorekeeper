@@ -78,6 +78,10 @@ const initialState: GameState = {
 
 export const total = (runs: number[]) => runs.reduce((a, b) => a + b, 0);
 
+function scoreLine(s: GameState): string {
+  return `${s.awayTeam || "Away"} ${total(s.awayRuns)} - ${s.homeTeam || "Home"} ${total(s.homeRuns)}`;
+}
+
 const isFinal = (s: GameState) => s.finalInning || s.inning >= MAX_INNINGS;
 
 /** Message shown when the third out ends a half-inning. */
@@ -146,7 +150,7 @@ function withRulePrompt(next: GameState): GameState {
         prompt: {
           kind: "walkoff",
           title: "Home team takes the lead!",
-          description: `${next.homeTeam || "Home"} leads ${home} - ${away} in the bottom of the last inning. The game is over. End the game now or keep playing?`,
+          description: `Final score: ${scoreLine(next)}. ${next.homeTeam || "Home"} takes the lead in the bottom of the last inning. End the game now or keep playing?`,
         },
         answered: [...next.answered, key],
       };
@@ -164,7 +168,7 @@ function withRulePrompt(next: GameState): GameState {
           prompt: {
             kind: "mercy15",
             title: "Mercy rule: 15-run lead",
-            description: `${leader} leads by ${lead} in the ${ORDINALS[next.inning - 1]} inning. The mercy rule ends the game. End the game now or keep playing?`,
+            description: `Current score: ${scoreLine(next)}. ${leader} leads by ${lead} in the ${ORDINALS[next.inning - 1]} inning. The mercy rule ends the game. End the game now or keep playing?`,
           },
           answered: [...next.answered, key],
         };
@@ -179,7 +183,7 @@ function withRulePrompt(next: GameState): GameState {
           prompt: {
             kind: "mercy12",
             title: "Mercy rule: 12-run lead",
-            description: `${leader} leads by ${lead} in the ${ORDINALS[next.inning - 1]} inning. The mercy rule ends the game. End the game now or keep playing?`,
+            description: `Current score: ${scoreLine(next)}. ${leader} leads by ${lead} in the ${ORDINALS[next.inning - 1]} inning. The mercy rule ends the game. End the game now or keep playing?`,
           },
           answered: [...next.answered, key],
         };
@@ -468,7 +472,7 @@ export function useKickballGame() {
         prompt: {
           kind: "time55",
           title: "55 MIN REACHED",
-          description: "End game and revert to previous inning score?",
+          description: `Current score: ${scoreLine(prev)}. End game and revert to previous inning score?`,
         },
         answered: [...prev.answered, "time55"],
       };
