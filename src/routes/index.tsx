@@ -334,7 +334,7 @@ function Index() {
         </div>
         <button
           type="button"
-          className="flex flex-1 items-center justify-center rounded-xl bg-destructive/10 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-destructive/50 shadow-sm transition-colors active:bg-destructive/20 disabled:opacity-40"
+          className="flex flex-1 items-center justify-center rounded-xl bg-destructive/20 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-destructive/60 shadow-sm transition-colors active:bg-destructive/30 disabled:opacity-40"
           onClick={resetBSF}
           disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
         >
@@ -343,7 +343,7 @@ function Index() {
       </div>
 
       {overtime && (
-        <p className="rounded-xl bg-destructive/15 px-3 py-1.5 text-center text-[11px] font-black uppercase tracking-wider text-destructive">
+        <p className="rounded-xl bg-destructive/20 px-3 py-1.5 text-center text-[11px] font-black uppercase tracking-wider text-destructive">
           Past 55:00 — revert score to the last completed inning
         </p>
       )}
