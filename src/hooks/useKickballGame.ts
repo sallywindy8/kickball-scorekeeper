@@ -5,11 +5,16 @@ type HalfInning = "top" | "bottom";
 export interface Flash {
   counter: "balls" | "strikes" | "fouls" | "outs";
   text: string;
+  tone?: "green" | "red";
+  /** Show as a large centered full-screen overlay instead of a small badge. */
+  overlay?: boolean;
 }
 
 export interface GameState {
   awayTeam: string;
   homeTeam: string;
+  awayColor: string;
+  homeColor: string;
   awayScore: number;
   homeScore: number;
   inning: number;
@@ -24,12 +29,15 @@ export interface GameState {
 }
 
 const MAX_INNINGS = 7;
-const MAX_FOULS = 4;
+const MAX_FOULS = 3;
 const MAX_HISTORY = 100;
+const ORDINALS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th"] as const;
 
 const initialState: GameState = {
   awayTeam: "Away",
   homeTeam: "Home",
+  awayColor: "",
+  homeColor: "",
   awayScore: 0,
   homeScore: 0,
   inning: 1,
@@ -41,6 +49,21 @@ const initialState: GameState = {
   isGameOver: false,
   flash: null,
 };
+
+/** Message shown when the third out ends a half-inning. */
+function endFlash(prev: GameState): Flash {
+  if (prev.halfInning === "top") {
+    return { counter: "outs", text: "End Half Inning", overlay: true };
+  }
+  if (prev.inning >= MAX_INNINGS) {
+    return { counter: "outs", text: "Game Over", overlay: true };
+  }
+  return {
+    counter: "outs",
+    text: `End of ${ORDINALS[prev.inning - 1]} Inning`,
+    overlay: true,
+  };
+}
 
 export function useKickballGame() {
   const [state, setState] = useState<GameState>(initialState);
@@ -78,12 +101,24 @@ export function useKickballGame() {
     setState((prev) => ({ ...prev, homeTeam: name || "Home" }));
   }, []);
 
+  const setAwayColor = useCallback((color: string) => {
+    setState((prev) => ({ ...prev, awayColor: color }));
+  }, []);
+
+  const setHomeColor = useCallback((color: string) => {
+    setState((prev) => ({ ...prev, homeColor: color }));
+  }, []);
+
   const addBall = useCallback(() => {
     apply((prev) => {
       if (prev.isGameOver) return prev;
       const nextBalls = prev.balls + 1;
       if (nextBalls >= 4) {
-        return { ...prev, balls: 0, flash: { counter: "balls", text: "Walk" } };
+        return {
+          ...prev,
+          balls: 0,
+          flash: { counter: "balls", text: "Walk", tone: "green" },
+        };
       }
       return { ...prev, balls: nextBalls };
     });
@@ -107,8 +142,8 @@ export function useKickballGame() {
         return {
           ...next,
           flash: halfEnded
-            ? { counter: "outs", text: "End Half Inning" }
-            : { counter: "strikes", text: "+1 Out" },
+            ? endFlash(prev)
+            : { counter: "strikes", text: "+1 Out", tone: "red" as const },
         };
       }
       return { ...prev, strikes: nextStrikes };
@@ -129,8 +164,8 @@ export function useKickballGame() {
         return {
           ...next,
           flash: halfEnded
-            ? { counter: "outs", text: "End Half Inning" }
-            : { counter: "fouls", text: "+1 Out" },
+            ? endFlash(prev)
+            : { counter: "fouls", text: "+1 Out", tone: "red" as const },
         };
       }
       return { ...prev, fouls: nextFouls };
@@ -146,7 +181,7 @@ export function useKickballGame() {
       if (prev.isGameOver) return prev;
       const { state: next, halfEnded } = addOutImpl(prev);
       if (halfEnded) {
-        return { ...next, flash: { counter: "outs", text: "End Half Inning" } };
+        return { ...next, flash: endFlash(prev) };
       }
       return next;
     });
@@ -193,6 +228,8 @@ export function useKickballGame() {
     canUndo: history.length > 0,
     setAwayTeam,
     setHomeTeam,
+    setAwayColor,
+    setHomeColor,
     addBall,
     removeBall,
     addStrike,

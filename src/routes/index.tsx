@@ -39,6 +39,8 @@ function Index() {
     canUndo,
     setAwayTeam,
     setHomeTeam,
+    setAwayColor,
+    setHomeColor,
     addBall,
     removeBall,
     addStrike,
@@ -79,7 +81,7 @@ function Index() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [state]);
 
-  // Auto-clear flourish badges (Walk, +1 Out, End Half Inning) after 2s.
+  // Auto-clear flourish badges after 2s.
   useEffect(() => {
     if (!state.flash) return;
     const t = setTimeout(clearFlash, 2000);
@@ -91,16 +93,35 @@ function Index() {
     resetTimer();
   };
 
+  const overlayFlash = state.flash?.overlay ? state.flash : null;
+  const badgeFor = (counter: "balls" | "strikes" | "fouls" | "outs") =>
+    state.flash && !state.flash.overlay && state.flash.counter === counter
+      ? state.flash.text
+      : undefined;
+
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-2 bg-background p-3 text-foreground">
+    <main className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-2 bg-background p-3 text-foreground">
       <h1 className="text-center text-lg font-black tracking-tight">Umpire Tally</h1>
+
+      {overlayFlash && (
+        <div
+          role="status"
+          className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-6"
+        >
+          <div className="rounded-3xl bg-red-600 px-8 py-6 text-center text-3xl font-black uppercase leading-tight tracking-wide text-white shadow-2xl">
+            {overlayFlash.text}
+          </div>
+        </div>
+      )}
 
       <section className="grid grid-cols-2 gap-3">
         <TeamScore
           label="Away"
           name={state.awayTeam}
           score={state.awayScore}
+          color={state.awayColor}
           onNameChange={setAwayTeam}
+          onColorChange={setAwayColor}
           onAdjustScore={adjustAwayScore}
           disabled={state.isGameOver}
         />
@@ -108,7 +129,9 @@ function Index() {
           label="Home"
           name={state.homeTeam}
           score={state.homeScore}
+          color={state.homeColor}
           onNameChange={setHomeTeam}
+          onColorChange={setHomeColor}
           onAdjustScore={adjustHomeScore}
           disabled={state.isGameOver}
         />
@@ -182,7 +205,8 @@ function Index() {
           onRemove={removeBall}
           max={4}
           disabled={state.isGameOver}
-          badge={state.flash?.counter === "balls" ? state.flash.text : undefined}
+          badge={badgeFor("balls")}
+          badgeTone="green"
         />
         <Counter
           label="Strikes"
@@ -191,16 +215,18 @@ function Index() {
           onRemove={removeStrike}
           max={3}
           disabled={state.isGameOver}
-          badge={state.flash?.counter === "strikes" ? state.flash.text : undefined}
+          badge={badgeFor("strikes")}
+          badgeTone="red"
         />
         <Counter
           label="Fouls"
           value={state.fouls}
           onAdd={addFoul}
           onRemove={removeFoul}
-          max={4}
+          max={3}
           disabled={state.isGameOver}
-          badge={state.flash?.counter === "fouls" ? state.flash.text : undefined}
+          badge={badgeFor("fouls")}
+          badgeTone="red"
         />
         <Counter
           label="Outs"
@@ -210,7 +236,8 @@ function Index() {
           max={3}
           disabled={state.isGameOver}
           variant="out"
-          badge={state.flash?.counter === "outs" ? state.flash.text : undefined}
+          badge={badgeFor("outs")}
+          badgeTone="red"
         />
       </section>
 
