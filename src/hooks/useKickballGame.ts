@@ -472,6 +472,7 @@ export function useKickballGame() {
         strikes: 0,
         fouls: 0,
         outs: 0,
+        pitchLog: [],
         isGameOver: true,
         flash: { counter: "outs", text: "Game Over", overlay: true },
       };
