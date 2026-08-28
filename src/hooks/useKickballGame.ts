@@ -14,6 +14,8 @@ export interface GameState {
   fouls: number;
   outs: number;
   isGameOver: boolean;
+  /** True briefly after the 4th ball — drives the "Walk" flourish. */
+  showWalk: boolean;
 }
 
 const MAX_INNINGS = 7;
@@ -30,10 +32,34 @@ const initialState: GameState = {
   fouls: 0,
   outs: 0,
   isGameOver: false,
+  showWalk: false,
 };
+
+const MAX_FOULS = 4;
+const MAX_HISTORY = 100;
 
 export function useKickballGame() {
   const [state, setState] = useState<GameState>(initialState);
+  const [history, setHistory] = useState<GameState[]>([]);
+
+  // Push current state onto the undo stack, then apply the update.
+  const apply = useCallback((updater: (prev: GameState) => GameState) => {
+    setState((prev) => {
+      const next = updater(prev);
+      if (next === prev) return prev;
+      setHistory((h) => [...h.slice(-MAX_HISTORY + 1), prev]);
+      return next;
+    });
+  }, []);
+
+  const undo = useCallback(() => {
+    setHistory((h) => {
+      if (h.length === 0) return h;
+      const prev = h[h.length - 1];
+      setState(prev);
+      return h.slice(0, -1);
+    });
+  }, []);
 
   const setAwayTeam = useCallback((name: string) => {
     setState((prev) => ({ ...prev, awayTeam: name || "Away" }));
