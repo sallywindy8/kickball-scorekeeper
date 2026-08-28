@@ -203,6 +203,7 @@ function Index() {
           onColorChange={setAwayColor}
           onAdjustScore={adjustAwayScore}
           disabled={state.isGameOver}
+          isKicking={state.halfInning === "top"}
         />
         <TeamScore
           label="Home"
@@ -213,6 +214,7 @@ function Index() {
           onColorChange={setHomeColor}
           onAdjustScore={adjustHomeScore}
           disabled={state.isGameOver}
+          isKicking={state.halfInning === "bottom"}
         />
       </section>
 
