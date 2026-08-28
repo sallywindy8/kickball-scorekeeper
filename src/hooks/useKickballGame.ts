@@ -590,6 +590,7 @@ export function useKickballGame() {
     dismissPrompt,
     endHalfInning,
     endGame,
+    resumeGame,
     confirmFinalInning,
     newGame,
     undo,
