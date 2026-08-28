@@ -16,8 +16,25 @@ export default defineConfig({
     // Base path for static hosting (e.g. GitHub Pages project sites served
     // from /<repo-name>/). Defaults to "/" for local dev and Lovable preview.
     base: process.env["VITE_BASE_PATH"] ?? "/",
+    plugins: isStaticBuild
+      ? [
+          {
+            name: "static-build-server-alias",
+            apply: "build" as const,
+            closeBundle() {
+              // The prerender step imports dist/server/server.js, but the nitro
+              // build emits index.mjs. Provide an alias so SPA shell prerendering
+              // can load the server entry.
+              const fs = require("node:fs");
+              fs.writeFileSync(
+                "dist/server/server.js",
+                'export { default } from "./index.mjs";\n',
+              );
+            },
+          },
+        ]
+      : [],
   },
-  ...(isStaticBuild ? { nitro: { preset: "node-server" } } : {}),
   tanstackStart: isStaticBuild
     ? {
         // Static SPA mode: prerender a static index.html shell; all app logic
