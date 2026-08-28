@@ -76,6 +76,7 @@ function Index() {
     dismissPrompt,
     endHalfInning,
     endGame,
+    resumeGame,
     confirmFinalInning,
     newGame,
     undo,
