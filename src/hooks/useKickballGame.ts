@@ -539,6 +539,11 @@ export function useKickballGame() {
     }));
   }, [apply]);
 
+  /** Dismiss the game-over overlay and return to scoring (e.g. to review the linescore). */
+  const resumeGame = useCallback(() => {
+    setState((prev) => ({ ...prev, isGameOver: false, flash: null }));
+  }, []);
+
   /** "Yes, final inning" answer to the 50-minute prompt. */
   const confirmFinalInning = useCallback(() => {
     apply((prev) => ({ ...prev, prompt: null, finalInning: true }));
@@ -585,6 +590,7 @@ export function useKickballGame() {
     dismissPrompt,
     endHalfInning,
     endGame,
+    resumeGame,
     confirmFinalInning,
     newGame,
     undo,

@@ -76,6 +76,7 @@ function Index() {
     dismissPrompt,
     endHalfInning,
     endGame,
+    resumeGame,
     confirmFinalInning,
     newGame,
     undo,
@@ -211,9 +212,12 @@ function Index() {
             Score a new game?
           </p>
           <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel onClick={resumeGame} className="rounded-xl">
+              Go back to score
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleNewGame}
-              className="w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
+              className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
             >
               New Game
             </AlertDialogAction>
@@ -312,7 +316,9 @@ function Index() {
             htmlFor="final-inning"
             className="text-[11px] font-black uppercase tracking-wider text-muted-foreground"
           >
-            Final inning (no run cap)
+            Final inning
+            <br />
+            (no run cap)
           </label>
           <input
             id="final-inning"
