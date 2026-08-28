@@ -144,9 +144,7 @@ function withRulePrompt(next: GameState): GameState {
   // 7-run cap per half inning — suspended in the final inning.
   if (!isFinal(next)) {
     const runs =
-      next.halfInning === "top"
-        ? next.awayRuns[next.inning - 1]
-        : next.homeRuns[next.inning - 1];
+      next.halfInning === "top" ? next.awayRuns[next.inning - 1] : next.homeRuns[next.inning - 1];
     const key = `runcap-${next.inning}-${next.halfInning}`;
     if ((runs ?? 0) >= RUN_CAP && !next.answered.includes(key)) {
       return {
@@ -317,14 +315,8 @@ export function useKickballGame() {
     [apply],
   );
 
-  const adjustAwayScore = useCallback(
-    (delta: number) => adjustScore("away", delta),
-    [adjustScore],
-  );
-  const adjustHomeScore = useCallback(
-    (delta: number) => adjustScore("home", delta),
-    [adjustScore],
-  );
+  const adjustAwayScore = useCallback((delta: number) => adjustScore("away", delta), [adjustScore]);
+  const adjustHomeScore = useCallback((delta: number) => adjustScore("home", delta), [adjustScore]);
 
   const resetBSF = useCallback(() => {
     apply((prev) => {
