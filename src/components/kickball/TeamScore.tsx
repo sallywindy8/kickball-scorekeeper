@@ -36,7 +36,7 @@ export function TeamScore({
     <div
       className={cn(
         "flex flex-1 flex-col items-center gap-1 rounded-2xl border border-border bg-card p-2 shadow-sm transition-opacity",
-        !isKicking && "opacity-60",
+        !isKicking && "opacity-40",
       )}
       style={cardStyle}
     >
