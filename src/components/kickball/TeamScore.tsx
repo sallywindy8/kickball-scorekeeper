@@ -65,19 +65,31 @@ export function TeamScore({
   disabled = false,
 }: TeamScoreProps) {
   const [open, setOpen] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fg = color ? readableText(color) : undefined;
   const style = color ? { backgroundColor: color, color: fg, borderColor: color } : undefined;
   const displayName = name || label;
+
+  const adjustHeight = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  };
+
+  useEffect(() => {
+    adjustHeight();
+  }, [name]);
 
   return (
     <div
       className="flex flex-1 flex-col items-center gap-1 rounded-2xl border border-border bg-card p-2 shadow-sm"
       style={style}
     >
-      <div className="grid w-full grid-cols-[1.5rem_1fr_1.5rem] items-center gap-1">
+      <div className="grid w-full grid-cols-[1.5rem_1fr_1.5rem] items-start gap-1">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger
-            className="h-6 w-6 shrink-0 rounded-full border-2 border-current/40 shadow-inner"
+            className="mt-0.5 h-6 w-6 shrink-0 rounded-full border-2 border-current/40 shadow-inner"
             style={{ backgroundColor: color || "transparent" }}
             aria-label={`Pick ${label} team color`}
           />
@@ -110,12 +122,22 @@ export function TeamScore({
         <label htmlFor={`team-name-${label}`} className="sr-only">
           {label} team name
         </label>
-        <input
+        <textarea
+          ref={textareaRef}
           id={`team-name-${label}`}
-          type="text"
           value={name}
-          onChange={(e) => onNameChange(e.target.value)}
-          className="h-7 w-full min-w-0 rounded-md border-0 bg-transparent text-center text-sm font-extrabold uppercase tracking-widest outline-none placeholder:opacity-60 focus-visible:ring-1 focus-visible:ring-current"
+          onChange={(e) => {
+            onNameChange(e.target.value);
+            adjustHeight();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              e.currentTarget.blur();
+            }
+          }}
+          rows={1}
+          className="w-full min-w-0 resize-none overflow-hidden rounded-md border-0 bg-transparent py-0.5 text-center text-xs font-extrabold uppercase leading-tight tracking-wider outline-none placeholder:opacity-60 focus-visible:ring-1 focus-visible:ring-current"
           placeholder={label}
         />
         <div aria-hidden="true" />
