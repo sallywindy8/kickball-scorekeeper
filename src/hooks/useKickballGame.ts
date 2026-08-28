@@ -92,7 +92,12 @@ function endFlash(prev: GameState): Flash {
     return { counter: "outs", text: "End Half Inning", overlay: true };
   }
   if (prev.inning >= MAX_INNINGS || prev.finalInning) {
-    return { counter: "outs", text: "Game Over", overlay: true };
+    return {
+      counter: "outs",
+      text: "Game Over",
+      overlay: true,
+      description: `Final score: ${scoreLine(prev)}`,
+    };
   }
   return {
     counter: "outs",
