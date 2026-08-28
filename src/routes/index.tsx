@@ -288,6 +288,14 @@ function Index() {
         >
           Final inning (no run cap)
         </label>
+        <button
+          type="button"
+          className="rounded-lg bg-background px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground shadow-sm transition-colors active:bg-background/70 disabled:opacity-40"
+          onClick={resetBSF}
+          disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
+        >
+          Reset B/S/F
+        </button>
         <input
           id="final-inning"
           type="checkbox"
@@ -377,14 +385,6 @@ function Index() {
           disabled={!canUndo}
         >
           <Undo2 className="h-4 w-4" /> Undo
-        </button>
-        <button
-          type="button"
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-muted py-2.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground transition-colors active:bg-muted/70 disabled:opacity-40"
-          onClick={resetBSF}
-          disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
-        >
-          Reset B/S/F
         </button>
         <NewGameDialog onConfirm={handleNewGame} className="flex-1 py-2.5 text-xs" />
       </section>
