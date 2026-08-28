@@ -87,10 +87,10 @@ function Index() {
   const timerStarted = seconds > 0 || isRunning;
 
   // Fail-safe: if the ump starts counting/scoring before starting the timer,
-  // nudge them once per action until the clock is running.
+  // or while the timer is paused, nudge them once per action until the clock is running.
   const [timerReminder, setTimerReminder] = useState(false);
   const guardTimer = (action: () => void) => () => {
-    if (!timerStarted && !state.isGameOver) setTimerReminder(true);
+    if (!isRunning && !state.isGameOver) setTimerReminder(true);
     action();
   };
 
