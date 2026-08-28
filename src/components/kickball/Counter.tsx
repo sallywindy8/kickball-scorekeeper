@@ -28,6 +28,8 @@ export function Counter({
 }: CounterProps) {
   const isAtMax = max !== undefined && value >= max;
   const isOut = variant === "out";
+  const dotCount = max ?? 3;
+  const fillColor = isOut ? "bg-red-600" : "bg-red-600";
 
   return (
     <div
@@ -65,6 +67,23 @@ export function Counter({
           </span>
         )}
       </div>
+
+      {/* Indicator dots */}
+      <div className="flex items-center justify-center gap-1.5 py-0.5">
+        {Array.from({ length: dotCount }).map((_, i) => (
+          <span
+            key={i}
+            className={cn(
+              "h-2.5 w-2.5 rounded-full border transition-colors",
+              i < value
+                ? cn(fillColor, "border-transparent")
+                : "border-gray-400 bg-white",
+            )}
+            aria-hidden="true"
+          />
+        ))}
+      </div>
+
       <div className="flex justify-center gap-3">
         <button
           type="button"
