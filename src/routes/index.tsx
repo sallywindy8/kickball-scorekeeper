@@ -362,7 +362,7 @@ function Index() {
         </div>
       </section>
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-stretch gap-1.5">
         <div className="flex w-1/2 items-center justify-between gap-2 rounded-xl border border-secondary-foreground/20 bg-secondary px-3 py-1">
           <label
             htmlFor="final-inning"
