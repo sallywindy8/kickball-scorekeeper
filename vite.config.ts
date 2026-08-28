@@ -34,7 +34,9 @@ export default defineConfig({
                   'import entry from "./index.mjs";',
                   "const env = { ASSETS: { fetch: () => new Response(null, { status: 404 }) } };",
                   "const ctx = { waitUntil() {}, passThroughOnException() {} };",
-                  "export default { fetch: (req) => entry.fetch(req, env, ctx) };",
+                  "// Clone the request: nitro's cloudflare entry mutates req.ip,",
+                  "// which the prerenderer's Request subclass forbids.",
+                  "export default { fetch: (req) => entry.fetch(new Request(req), env, ctx) };",
                   "",
                 ].join("\n"),
               );
