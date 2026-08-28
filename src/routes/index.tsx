@@ -199,6 +199,28 @@ function Index() {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={state.isGameOver}>
+        <AlertDialogContent className="max-w-sm rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Game Over</AlertDialogTitle>
+            <AlertDialogDescription>
+              Final score: {state.awayTeam} {awayScore} - {state.homeTeam} {homeScore}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <p className="text-center text-xs font-black uppercase tracking-wider text-muted-foreground">
+            Score a new game?
+          </p>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogAction
+              onClick={handleNewGame}
+              className="w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              New Game
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <section className="grid grid-cols-2 gap-2">
         <TeamScore
           label="Away"
@@ -284,27 +306,26 @@ function Index() {
         </div>
       </section>
 
-      <div className="flex items-center justify-between gap-2 rounded-xl bg-muted px-3 py-1">
-        <label
-          htmlFor="final-inning"
-          className="text-[11px] font-black uppercase tracking-wider text-muted-foreground"
-        >
-          Final inning (no run cap)
-        </label>
-        <input
-          id="final-inning"
-          type="checkbox"
-          className="h-5 w-5 accent-primary"
-          checked={isFinalInning}
-          disabled={state.inning >= 7}
-          onChange={(e) => setFinalInning(e.target.checked)}
-        />
-      </div>
-
-      <div className="flex justify-end">
+      <div className="flex items-center gap-2">
+        <div className="flex w-1/2 items-center justify-between gap-2 rounded-xl bg-muted px-3 py-1">
+          <label
+            htmlFor="final-inning"
+            className="text-[11px] font-black uppercase tracking-wider text-muted-foreground"
+          >
+            Final inning (no run cap)
+          </label>
+          <input
+            id="final-inning"
+            type="checkbox"
+            className="h-5 w-5 accent-primary"
+            checked={isFinalInning}
+            disabled={state.inning >= 7}
+            onChange={(e) => setFinalInning(e.target.checked)}
+          />
+        </div>
         <button
           type="button"
-          className="rounded-lg bg-destructive/10 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-destructive/70 shadow-sm transition-colors active:bg-destructive/20 disabled:opacity-40"
+          className="flex flex-1 items-center justify-center rounded-xl bg-destructive/10 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-destructive/50 shadow-sm transition-colors active:bg-destructive/20 disabled:opacity-40"
           onClick={resetBSF}
           disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
         >
@@ -318,24 +339,6 @@ function Index() {
         </p>
       )}
 
-      {state.isGameOver && (
-        <div className="rounded-xl bg-primary p-3 text-center text-primary-foreground shadow-sm">
-          <p className="text-base font-bold">Game Over</p>
-          <p className="text-sm opacity-90">
-            Final score: {state.awayTeam} {awayScore} - {state.homeTeam} {homeScore}
-          </p>
-          <p className="mt-2 text-xs font-bold uppercase tracking-wider opacity-80">
-            Score a new game?
-          </p>
-          <button
-            type="button"
-            onClick={handleNewGame}
-            className="mt-1.5 w-full rounded-xl bg-primary-foreground py-2.5 text-sm font-extrabold uppercase tracking-wider text-primary shadow transition-colors active:bg-primary-foreground/80"
-          >
-            New Game
-          </button>
-        </div>
-      )}
 
       <section className="grid flex-1 grid-cols-2 gap-2">
         <Counter
