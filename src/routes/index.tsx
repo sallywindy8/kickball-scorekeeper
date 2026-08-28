@@ -383,9 +383,8 @@ function Index() {
         </div>
         <button
           type="button"
-          className="flex flex-1 items-center justify-center rounded-xl bg-emerald-600 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-sm transition-colors hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-40"
+          className="flex w-1/2 items-center justify-center rounded-xl bg-emerald-600 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-sm transition-colors hover:bg-emerald-700 active:bg-emerald-800"
           onClick={resetBSF}
-          disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
         >
           Kicker is Safe
         </button>
