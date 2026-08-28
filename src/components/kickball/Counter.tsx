@@ -1,5 +1,4 @@
 import { Minus, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface CounterProps {
@@ -9,7 +8,7 @@ interface CounterProps {
   onRemove: () => void;
   max?: number;
   disabled?: boolean;
-  variant?: "default" | "outline" | "foul" | "out";
+  variant?: "default" | "out";
   /** Temporary badge shown over the count, e.g. "Walk" on the 4th ball. */
   badge?: string | undefined;
 }
@@ -25,58 +24,68 @@ export function Counter({
   badge,
 }: CounterProps) {
   const isAtMax = max !== undefined && value >= max;
-
-  const variantClasses = {
-    default: "bg-primary text-primary-foreground hover:bg-primary/90",
-    outline: "border-2 border-primary text-primary hover:bg-primary/10",
-    foul: "bg-amber-500 text-white hover:bg-amber-600",
-    out: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-  };
+  const isOut = variant === "out";
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <span className="text-base font-bold uppercase tracking-wider text-foreground">{label}</span>
-      <div
+    <div
+      className={cn(
+        "relative flex flex-col items-center rounded-3xl border p-2.5 shadow-sm sm:p-3",
+        isOut ? "border-red-200 bg-red-50" : "border-border bg-card",
+      )}
+    >
+      <span
         className={cn(
-          "relative flex h-20 w-20 items-center justify-center rounded-2xl text-5xl font-bold shadow-sm",
-          variant === "foul" && "bg-amber-500/10 text-amber-600",
-          variant === "out" && "bg-destructive/10 text-destructive",
-          variant !== "foul" && variant !== "out" && "bg-card text-foreground",
+          "text-[10px] font-black uppercase tracking-[0.18em]",
+          isOut ? "text-red-600" : "text-muted-foreground",
+        )}
+      >
+        {label}
+      </span>
+      <span
+        className={cn(
+          "my-1 text-4xl font-black tabular-nums sm:text-5xl",
+          isOut ? "text-red-600" : "text-foreground",
         )}
       >
         {value}
-        {badge && (
-          <span
-            role="status"
-            className="absolute -top-3 left-1/2 -translate-x-1/2 animate-bounce rounded-full bg-primary px-3 py-0.5 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-md"
-          >
-            {badge}
-          </span>
-        )}
-      </div>
-      <div className="flex gap-2">
-        <Button
+      </span>
+      {badge && (
+        <span
+          role="status"
+          className="absolute -top-3 left-1/2 -translate-x-1/2 animate-bounce whitespace-nowrap rounded-full bg-primary px-3 py-0.5 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-md"
+        >
+          {badge}
+        </span>
+      )}
+      <div className="flex w-full gap-2">
+        <button
           type="button"
-          variant="outline"
-          size="icon"
-          className={cn("h-14 w-14 rounded-full text-2xl", variantClasses[variant])}
+          className={cn(
+            "flex aspect-square flex-1 items-center justify-center rounded-full transition-colors disabled:opacity-40",
+            isOut
+              ? "bg-red-100 text-red-600 active:bg-red-200"
+              : "bg-muted text-foreground active:bg-muted/70",
+          )}
           onClick={onRemove}
           disabled={disabled || value <= 0}
           aria-label={`Decrease ${label}`}
         >
-          <Minus className="h-6 w-6" />
-        </Button>
-        <Button
+          <Minus className="h-4 w-4" strokeWidth={3} />
+        </button>
+        <button
           type="button"
-          variant="outline"
-          size="icon"
-          className={cn("h-14 w-14 rounded-full text-2xl", variantClasses[variant])}
+          className={cn(
+            "flex aspect-square flex-1 items-center justify-center rounded-full shadow-md transition-colors disabled:opacity-40",
+            isOut
+              ? "bg-red-600 text-white shadow-red-200 active:bg-red-700"
+              : "bg-primary text-primary-foreground active:bg-primary/90",
+          )}
           onClick={onAdd}
           disabled={disabled || isAtMax}
           aria-label={`Increase ${label}`}
         >
-          <Plus className="h-6 w-6" />
-        </Button>
+          <Plus className="h-4 w-4" strokeWidth={3} />
+        </button>
       </div>
     </div>
   );

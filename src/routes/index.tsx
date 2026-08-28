@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Pause, Play, RotateCcw, Undo2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Counter } from "@/components/kickball/Counter";
 import { NewGameDialog } from "@/components/kickball/NewGameDialog";
 import { TeamScore } from "@/components/kickball/TeamScore";
@@ -31,6 +30,8 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
+
+const ORDINALS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th"] as const;
 
 function Index() {
   const {
@@ -90,8 +91,8 @@ function Index() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col gap-4 bg-background p-4 text-foreground">
-      <h1 className="text-center text-2xl font-bold tracking-tight">Umpire Tally</h1>
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-3 bg-background p-3 text-foreground">
+      <h1 className="text-center text-lg font-black tracking-tight">Umpire Tally</h1>
 
       <section className="grid grid-cols-2 gap-3">
         <TeamScore
@@ -112,74 +113,67 @@ function Index() {
         />
       </section>
 
-      <section className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <section className="flex items-center justify-between gap-3 rounded-2xl bg-primary p-3 text-primary-foreground shadow-sm">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-tight opacity-60">Inning</p>
+          <div className="flex items-center gap-2">
             <span
               className={cn(
-                "rounded-lg px-3 py-1 text-sm font-bold uppercase tracking-wider",
+                "rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-widest",
                 state.halfInning === "top"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground",
+                  ? "bg-primary-foreground text-primary"
+                  : "bg-primary-foreground/20 text-primary-foreground/70",
               )}
             >
               Top
             </span>
             <span
               className={cn(
-                "rounded-lg px-3 py-1 text-sm font-bold uppercase tracking-wider",
+                "rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-widest",
                 state.halfInning === "bottom"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground",
+                  ? "bg-primary-foreground text-primary"
+                  : "bg-primary-foreground/20 text-primary-foreground/70",
               )}
             >
               Bot
             </span>
-            <span className="text-3xl font-bold">{state.inning}</span>
-          </div>
-          <div className="text-right">
-            <div className="text-3xl font-mono font-bold tabular-nums">{formattedTime}</div>
+            <span className="text-lg font-extrabold">{ORDINALS[state.inning - 1]}</span>
           </div>
         </div>
-
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant={isRunning ? "secondary" : "default"}
-            className="flex-1 rounded-xl py-5 text-base font-semibold"
-            onClick={isRunning ? pause : start}
-          >
-            {isRunning ? (
-              <>
-                <Pause className="mr-2 h-5 w-5" /> Pause
-              </>
-            ) : (
-              <>
-                <Play className="mr-2 h-5 w-5" /> Start
-              </>
-            )}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="rounded-xl px-5 py-5 text-base font-semibold"
-            onClick={resetTimer}
-          >
-            <RotateCcw className="mr-2 h-5 w-5" /> Reset
-          </Button>
+        <div className="shrink-0 text-right">
+          <p className="text-[10px] font-bold uppercase tracking-tight opacity-60">Game Time</p>
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono text-lg font-bold tabular-nums">{formattedTime}</span>
+            <button
+              type="button"
+              onClick={isRunning ? pause : start}
+              aria-label={isRunning ? "Pause timer" : "Start timer"}
+              className="rounded-full bg-primary-foreground/15 p-1.5 transition-colors hover:bg-primary-foreground/25"
+            >
+              {isRunning ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            </button>
+            <button
+              type="button"
+              onClick={resetTimer}
+              aria-label="Reset timer"
+              className="rounded-full bg-primary-foreground/15 p-1.5 transition-colors hover:bg-primary-foreground/25"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </section>
 
       {state.isGameOver && (
-        <div className="rounded-xl bg-primary p-4 text-center text-primary-foreground shadow-sm">
-          <p className="text-lg font-bold">Game Over</p>
+        <div className="rounded-xl bg-primary p-3 text-center text-primary-foreground shadow-sm">
+          <p className="text-base font-bold">Game Over</p>
           <p className="text-sm opacity-90">
             Final score: {state.awayTeam} {state.awayScore} - {state.homeTeam} {state.homeScore}
           </p>
         </div>
       )}
 
-      <section className="grid grid-cols-2 gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm sm:grid-cols-4">
+      <section className="grid flex-1 grid-cols-2 content-center gap-3">
         <Counter
           label="Balls"
           value={state.balls}
@@ -219,17 +213,17 @@ function Index() {
         />
       </section>
 
-      <Button
-        type="button"
-        variant="outline"
-        className="rounded-xl py-5 text-base font-semibold"
-        onClick={undo}
-        disabled={!canUndo}
-      >
-        <Undo2 className="mr-2 h-5 w-5" /> Undo
-      </Button>
-
-      <NewGameDialog onConfirm={handleNewGame} />
+      <section className="flex gap-3">
+        <button
+          type="button"
+          className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-muted py-3 text-sm font-extrabold uppercase tracking-wider text-muted-foreground transition-colors active:bg-muted/70 disabled:opacity-40"
+          onClick={undo}
+          disabled={!canUndo}
+        >
+          <Undo2 className="h-4 w-4" /> Undo
+        </button>
+        <NewGameDialog onConfirm={handleNewGame} className="flex-[2] py-3 text-sm" />
+      </section>
     </main>
   );
 }
