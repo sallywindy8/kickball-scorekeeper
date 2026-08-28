@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -63,16 +64,18 @@ export function TeamScore({
   onAdjustScore,
   disabled = false,
 }: TeamScoreProps) {
+  const [open, setOpen] = useState(false);
   const fg = color ? readableText(color) : undefined;
   const style = color ? { backgroundColor: color, color: fg, borderColor: color } : undefined;
+  const displayName = name || label;
 
   return (
     <div
       className="flex flex-1 flex-col items-center gap-1 rounded-2xl border border-border bg-card p-2 shadow-sm"
       style={style}
     >
-      <div className="flex w-full items-center gap-1">
-        <Popover>
+      <div className="grid w-full grid-cols-[1.5rem_1fr_1.5rem] items-center gap-1">
+        <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger
             className="h-6 w-6 shrink-0 rounded-full border-2 border-current/40 shadow-inner"
             style={{ backgroundColor: color || "transparent" }}
@@ -87,7 +90,10 @@ export function TeamScore({
                 <button
                   key={c.name}
                   type="button"
-                  onClick={() => onColorChange(c.value)}
+                  onClick={() => {
+                    onColorChange(c.value);
+                    setOpen(false);
+                  }}
                   aria-label={c.name}
                   title={c.name}
                   className={cn(
@@ -112,6 +118,7 @@ export function TeamScore({
           className="h-7 w-full min-w-0 rounded-md border-0 bg-transparent text-center text-sm font-extrabold uppercase tracking-widest outline-none placeholder:opacity-60 focus-visible:ring-1 focus-visible:ring-current"
           placeholder={label}
         />
+        <div aria-hidden="true" />
       </div>
       <div className="flex w-full items-center justify-between gap-1">
         <button
@@ -119,7 +126,7 @@ export function TeamScore({
           className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-current/40 transition-colors disabled:opacity-40"
           onClick={() => onAdjustScore(-1)}
           disabled={disabled || score <= 0}
-          aria-label={`Decrease ${name} score`}
+          aria-label={`Decrease ${displayName} score`}
         >
           <Minus className="h-4 w-4" strokeWidth={3} />
         </button>
@@ -129,7 +136,7 @@ export function TeamScore({
           className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-current/40 transition-colors disabled:opacity-40"
           onClick={() => onAdjustScore(1)}
           disabled={disabled}
-          aria-label={`Increase ${name} score`}
+          aria-label={`Increase ${displayName} score`}
         >
           <Plus className="h-4 w-4" strokeWidth={3} />
         </button>
