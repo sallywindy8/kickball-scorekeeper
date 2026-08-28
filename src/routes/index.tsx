@@ -255,16 +255,16 @@ function Index() {
         />
       </section>
 
-      <section className="flex items-center justify-between gap-3 rounded-2xl bg-primary p-3 text-primary-foreground shadow-sm">
+      <section className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm">
         <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-tight opacity-60">Inning</p>
+          <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">Inning</p>
           <div className="flex items-center gap-2">
             <span
               className={cn(
                 "rounded-md px-2.5 py-1 text-xs font-black uppercase tracking-widest",
                 state.halfInning === "top"
-                  ? "bg-primary-foreground text-primary"
-                  : "bg-primary-foreground/20 text-primary-foreground/70",
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               Top
@@ -273,22 +273,22 @@ function Index() {
               className={cn(
                 "rounded-md px-2.5 py-1 text-xs font-black uppercase tracking-widest",
                 state.halfInning === "bottom"
-                  ? "bg-primary-foreground text-primary"
-                  : "bg-primary-foreground/20 text-primary-foreground/70",
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               Bot
             </span>
-            <span className="text-2xl font-extrabold">{ORDINALS[state.inning - 1]}</span>
+            <span className="text-2xl font-extrabold text-foreground">{ORDINALS[state.inning - 1]}</span>
           </div>
         </div>
         <div className="shrink-0 text-right">
-          <p className="text-xs font-bold uppercase tracking-tight opacity-60">Game Time</p>
+          <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">Game Time</p>
           <div className="flex items-center gap-2">
             <span
               className={cn(
-                "font-mono text-2xl font-bold tabular-nums",
-                overtime && "text-red-300",
+                "font-mono text-3xl font-bold tabular-nums text-primary",
+                overtime && "text-red-400",
               )}
             >
               {formattedTime}
@@ -297,7 +297,7 @@ function Index() {
               type="button"
               onClick={isRunning ? pause : start}
               aria-label={isRunning ? "Pause timer" : "Start timer"}
-              className="rounded-full bg-primary-foreground/15 p-2 transition-colors hover:bg-primary-foreground/25"
+              className="rounded-full bg-muted p-2 text-foreground transition-colors hover:bg-muted/70"
             >
               {isRunning ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
             </button>
@@ -305,7 +305,7 @@ function Index() {
               type="button"
               onClick={resetTimer}
               aria-label="Reset timer"
-              className="rounded-full bg-primary-foreground/15 p-2 transition-colors hover:bg-primary-foreground/25"
+              className="rounded-full bg-muted p-2 text-foreground transition-colors hover:bg-muted/70"
             >
               <RotateCcw className="h-5 w-5" />
             </button>
