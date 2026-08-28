@@ -23,13 +23,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kickball Umpire Tally" },
+      { title: "WAKA Scorekeeping" },
       {
         name: "description",
         content:
           "Mobile-first tally tool for kickball umpires. Track balls, strikes, fouls, outs, score, innings, and game time.",
       },
-      { property: "og:title", content: "Kickball Umpire Tally" },
+      { property: "og:title", content: "WAKA Scorekeeping" },
       {
         property: "og:description",
         content:
