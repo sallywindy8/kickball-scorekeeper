@@ -17,6 +17,7 @@ export default defineConfig({
     // from /<repo-name>/). Defaults to "/" for local dev and Lovable preview.
     base: process.env["VITE_BASE_PATH"] ?? "/",
   },
+  ...(isStaticBuild ? { nitro: { preset: "node-server" } } : {}),
   tanstackStart: isStaticBuild
     ? {
         // Static SPA mode: prerender a static index.html shell; all app logic
