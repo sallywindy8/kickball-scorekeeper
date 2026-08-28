@@ -94,11 +94,11 @@ export function useKickballGame() {
   }, []);
 
   const setAwayTeam = useCallback((name: string) => {
-    setState((prev) => ({ ...prev, awayTeam: name || "Away" }));
+    setState((prev) => ({ ...prev, awayTeam: name }));
   }, []);
 
   const setHomeTeam = useCallback((name: string) => {
-    setState((prev) => ({ ...prev, homeTeam: name || "Home" }));
+    setState((prev) => ({ ...prev, homeTeam: name }));
   }, []);
 
   const setAwayColor = useCallback((color: string) => {
