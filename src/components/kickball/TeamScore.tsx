@@ -65,16 +65,16 @@ export function TeamScore({
   disabled = false,
 }: TeamScoreProps) {
   const [open, setOpen] = useState(false);
+  const [nameHeight, setNameHeight] = useState<number | undefined>(undefined);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fg = color ? readableText(color) : undefined;
-  const style = color ? { backgroundColor: color, color: fg, borderColor: color } : undefined;
+  const cardStyle = color ? { backgroundColor: color, color: fg, borderColor: color } : undefined;
   const displayName = name || label;
 
   const adjustHeight = () => {
     const el = textareaRef.current;
     if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${el.scrollHeight}px`;
+    setNameHeight(el.scrollHeight);
   };
 
   useEffect(() => {
