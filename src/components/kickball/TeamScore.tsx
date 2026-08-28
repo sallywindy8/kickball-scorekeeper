@@ -13,6 +13,7 @@ interface TeamScoreProps {
   onColorChange: (color: string) => void;
   onAdjustScore: (delta: number) => void;
   disabled?: boolean;
+  isKicking?: boolean;
 }
 
 export function TeamScore({
