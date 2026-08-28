@@ -29,13 +29,13 @@ export function Counter({
   return (
     <div
       className={cn(
-        "relative flex flex-col items-center rounded-3xl border p-2.5 shadow-sm sm:p-3",
+        "relative flex h-full flex-col items-center justify-center rounded-3xl border p-2 shadow-sm",
         isOut ? "border-red-200 bg-red-50" : "border-border bg-card",
       )}
     >
       <span
         className={cn(
-          "text-[10px] font-black uppercase tracking-[0.18em]",
+          "text-sm font-black uppercase tracking-[0.14em]",
           isOut ? "text-red-600" : "text-muted-foreground",
         )}
       >
@@ -43,7 +43,7 @@ export function Counter({
       </span>
       <span
         className={cn(
-          "my-1 text-4xl font-black tabular-nums sm:text-5xl",
+          "text-4xl font-black tabular-nums",
           isOut ? "text-red-600" : "text-foreground",
         )}
       >
@@ -57,11 +57,11 @@ export function Counter({
           {badge}
         </span>
       )}
-      <div className="flex w-full gap-2">
+      <div className="flex justify-center gap-2 pt-1">
         <button
           type="button"
           className={cn(
-            "flex aspect-square flex-1 items-center justify-center rounded-full transition-colors disabled:opacity-40",
+            "flex h-10 w-10 items-center justify-center rounded-full transition-colors disabled:opacity-40",
             isOut
               ? "bg-red-100 text-red-600 active:bg-red-200"
               : "bg-muted text-foreground active:bg-muted/70",
@@ -75,7 +75,7 @@ export function Counter({
         <button
           type="button"
           className={cn(
-            "flex aspect-square flex-1 items-center justify-center rounded-full shadow-md transition-colors disabled:opacity-40",
+            "flex h-10 w-10 items-center justify-center rounded-full shadow-md transition-colors disabled:opacity-40",
             isOut
               ? "bg-red-600 text-white shadow-red-200 active:bg-red-700"
               : "bg-primary text-primary-foreground active:bg-primary/90",

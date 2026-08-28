@@ -102,7 +102,8 @@ export function useKickballGame() {
       if (prev.isGameOver) return prev;
       const nextStrikes = prev.strikes + 1;
       if (nextStrikes >= 3) {
-        const { state: next, halfEnded } = addOutImpl({ ...prev, strikes: 0 });
+        // Strike-out: reset balls, strikes, and fouls for the next batter.
+        const { state: next, halfEnded } = addOutImpl({ ...prev, balls: 0, strikes: 0, fouls: 0 });
         return {
           ...next,
           flash: halfEnded
@@ -123,7 +124,8 @@ export function useKickballGame() {
       if (prev.isGameOver) return prev;
       const nextFouls = prev.fouls + 1;
       if (nextFouls >= MAX_FOULS) {
-        const { state: next, halfEnded } = addOutImpl({ ...prev, fouls: 0 });
+        // Foul-out: reset balls, strikes, and fouls for the next batter.
+        const { state: next, halfEnded } = addOutImpl({ ...prev, balls: 0, strikes: 0, fouls: 0 });
         return {
           ...next,
           flash: halfEnded
@@ -174,6 +176,13 @@ export function useKickballGame() {
     [apply],
   );
 
+  const resetBSF = useCallback(() => {
+    apply((prev) => {
+      if (prev.balls === 0 && prev.strikes === 0 && prev.fouls === 0) return prev;
+      return { ...prev, balls: 0, strikes: 0, fouls: 0 };
+    });
+  }, [apply]);
+
   const newGame = useCallback(() => {
     setState(initialState);
     setHistory([]);
@@ -194,6 +203,7 @@ export function useKickballGame() {
     removeOut,
     adjustAwayScore,
     adjustHomeScore,
+    resetBSF,
     newGame,
     undo,
     clearFlash,
