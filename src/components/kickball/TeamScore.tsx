@@ -73,11 +73,13 @@ export function TeamScore({
 
   const adjustHeight = () => {
     const el = textareaRef.current;
+    console.log("adjustHeight called", el?.scrollHeight);
     if (!el) return;
     setNameHeight(el.scrollHeight);
   };
 
   useEffect(() => {
+    console.log("useEffect name", name);
     adjustHeight();
   }, [name]);
 
