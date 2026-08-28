@@ -14,6 +14,8 @@ export interface GameState {
   fouls: number;
   outs: number;
   isGameOver: boolean;
+  /** True briefly after the 4th ball — drives the "Walk" flourish. */
+  showWalk: boolean;
 }
 
 const MAX_INNINGS = 7;
@@ -30,10 +32,34 @@ const initialState: GameState = {
   fouls: 0,
   outs: 0,
   isGameOver: false,
+  showWalk: false,
 };
+
+const MAX_FOULS = 4;
+const MAX_HISTORY = 100;
 
 export function useKickballGame() {
   const [state, setState] = useState<GameState>(initialState);
+  const [history, setHistory] = useState<GameState[]>([]);
+
+  // Push current state onto the undo stack, then apply the update.
+  const apply = useCallback((updater: (prev: GameState) => GameState) => {
+    setState((prev) => {
+      const next = updater(prev);
+      if (next === prev) return prev;
+      setHistory((h) => [...h.slice(-MAX_HISTORY + 1), prev]);
+      return next;
+    });
+  }, []);
+
+  const undo = useCallback(() => {
+    setHistory((h) => {
+      const prev = h[h.length - 1];
+      if (prev === undefined) return h;
+      setState(prev);
+      return h.slice(0, -1);
+    });
+  }, []);
 
   const setAwayTeam = useCallback((name: string) => {
     setState((prev) => ({ ...prev, awayTeam: name || "Away" }));
@@ -44,22 +70,26 @@ export function useKickballGame() {
   }, []);
 
   const addBall = useCallback(() => {
-    setState((prev) => {
+    apply((prev) => {
       if (prev.isGameOver) return prev;
       const nextBalls = prev.balls + 1;
       if (nextBalls >= 4) {
-        return { ...prev, balls: 0 };
+        return { ...prev, balls: 0, showWalk: true };
       }
       return { ...prev, balls: nextBalls };
     });
+  }, [apply]);
+
+  const clearWalk = useCallback(() => {
+    setState((prev) => (prev.showWalk ? { ...prev, showWalk: false } : prev));
   }, []);
 
   const removeBall = useCallback(() => {
-    setState((prev) => ({ ...prev, balls: Math.max(0, prev.balls - 1) }));
-  }, []);
+    apply((prev) => ({ ...prev, balls: Math.max(0, prev.balls - 1) }));
+  }, [apply]);
 
   const addStrike = useCallback(() => {
-    setState((prev) => {
+    apply((prev) => {
       if (prev.isGameOver) return prev;
       const nextStrikes = prev.strikes + 1;
       if (nextStrikes >= 3) {
@@ -67,58 +97,66 @@ export function useKickballGame() {
       }
       return { ...prev, strikes: nextStrikes };
     });
-  }, []);
+  }, [apply]);
 
   const removeStrike = useCallback(() => {
-    setState((prev) => ({ ...prev, strikes: Math.max(0, prev.strikes - 1) }));
-  }, []);
+    apply((prev) => ({ ...prev, strikes: Math.max(0, prev.strikes - 1) }));
+  }, [apply]);
 
   const addFoul = useCallback(() => {
-    setState((prev) => {
+    apply((prev) => {
       if (prev.isGameOver) return prev;
       const nextFouls = prev.fouls + 1;
-      if (nextFouls >= 3) {
+      if (nextFouls >= MAX_FOULS) {
         return addOutImpl({ ...prev, fouls: 0 });
       }
       return { ...prev, fouls: nextFouls };
     });
-  }, []);
+  }, [apply]);
 
   const removeFoul = useCallback(() => {
-    setState((prev) => ({ ...prev, fouls: Math.max(0, prev.fouls - 1) }));
-  }, []);
+    apply((prev) => ({ ...prev, fouls: Math.max(0, prev.fouls - 1) }));
+  }, [apply]);
 
   const addOut = useCallback(() => {
-    setState((prev) => {
+    apply((prev) => {
       if (prev.isGameOver) return prev;
       return addOutImpl(prev);
     });
-  }, []);
+  }, [apply]);
 
   const removeOut = useCallback(() => {
-    setState((prev) => ({ ...prev, outs: Math.max(0, prev.outs - 1) }));
-  }, []);
+    apply((prev) => ({ ...prev, outs: Math.max(0, prev.outs - 1) }));
+  }, [apply]);
 
-  const adjustAwayScore = useCallback((delta: number) => {
-    setState((prev) => ({
-      ...prev,
-      awayScore: Math.max(0, prev.awayScore + delta),
-    }));
-  }, []);
+  const adjustAwayScore = useCallback(
+    (delta: number) => {
+      apply((prev) => ({
+        ...prev,
+        awayScore: Math.max(0, prev.awayScore + delta),
+      }));
+    },
+    [apply],
+  );
 
-  const adjustHomeScore = useCallback((delta: number) => {
-    setState((prev) => ({
-      ...prev,
-      homeScore: Math.max(0, prev.homeScore + delta),
-    }));
-  }, []);
+  const adjustHomeScore = useCallback(
+    (delta: number) => {
+      apply((prev) => ({
+        ...prev,
+        homeScore: Math.max(0, prev.homeScore + delta),
+      }));
+    },
+    [apply],
+  );
 
   const newGame = useCallback(() => {
     setState(initialState);
+    setHistory([]);
   }, []);
 
   return {
     state,
+    canUndo: history.length > 0,
     setAwayTeam,
     setHomeTeam,
     addBall,
@@ -132,6 +170,8 @@ export function useKickballGame() {
     adjustAwayScore,
     adjustHomeScore,
     newGame,
+    undo,
+    clearWalk,
   };
 }
 

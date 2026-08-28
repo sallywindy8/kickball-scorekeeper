@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Pause, Play, RotateCcw } from "lucide-react";
+import { Pause, Play, RotateCcw, Undo2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Counter } from "@/components/kickball/Counter";
@@ -35,6 +35,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const {
     state,
+    canUndo,
     setAwayTeam,
     setHomeTeam,
     addBall,
@@ -48,6 +49,8 @@ function Index() {
     adjustAwayScore,
     adjustHomeScore,
     newGame,
+    undo,
+    clearWalk,
   } = useKickballGame();
 
   const { formattedTime, isRunning, start, pause, reset: resetTimer } = useTimer();
@@ -73,6 +76,13 @@ function Index() {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [state]);
+
+  // Auto-clear the "Walk" flourish after a few seconds.
+  useEffect(() => {
+    if (!state.showWalk) return;
+    const t = setTimeout(clearWalk, 3000);
+    return () => clearTimeout(t);
+  }, [state.showWalk, clearWalk]);
 
   const handleNewGame = () => {
     newGame();
@@ -177,6 +187,7 @@ function Index() {
           onRemove={removeBall}
           max={4}
           disabled={state.isGameOver}
+          badge={state.showWalk ? "Walk" : undefined}
         />
         <Counter
           label="Strikes"
@@ -191,7 +202,7 @@ function Index() {
           value={state.fouls}
           onAdd={addFoul}
           onRemove={removeFoul}
-          max={3}
+          max={4}
           disabled={state.isGameOver}
           variant="foul"
         />
