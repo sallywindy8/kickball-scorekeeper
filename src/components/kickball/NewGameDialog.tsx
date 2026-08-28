@@ -9,25 +9,28 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface NewGameDialogProps {
   onConfirm: () => void;
   disabled?: boolean;
+  className?: string;
 }
 
-export function NewGameDialog({ onConfirm, disabled = false }: NewGameDialogProps) {
+export function NewGameDialog({ onConfirm, disabled = false, className }: NewGameDialogProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
+        <button
           type="button"
-          variant="destructive"
-          className="w-full rounded-xl py-6 text-lg font-semibold"
+          className={cn(
+            "flex w-full items-center justify-center rounded-2xl bg-destructive py-4 text-base font-extrabold uppercase tracking-wider text-destructive-foreground shadow-lg transition-colors active:bg-destructive/90 disabled:opacity-40",
+            className,
+          )}
           disabled={disabled}
         >
           New Game
-        </Button>
+        </button>
       </AlertDialogTrigger>
       <AlertDialogContent className="max-w-sm rounded-2xl">
         <AlertDialogHeader>
