@@ -95,6 +95,7 @@ export function TeamScore({
         />
         <div aria-hidden="true" />
       </div>
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">{label}</p>
       <div className="flex w-full items-center justify-between gap-1">
         <button
           type="button"
