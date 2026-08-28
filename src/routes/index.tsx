@@ -256,7 +256,7 @@ function Index() {
           color={state.awayColor}
           onNameChange={setAwayTeam}
           onColorChange={setAwayColor}
-          onAdjustScore={adjustAwayScore}
+          onAdjustScore={(d) => (d > 0 ? guardTimer(() => adjustAwayScore(d))() : adjustAwayScore(d))}
           disabled={state.isGameOver}
           isKicking={state.halfInning === "top"}
           dimInactive={timerStarted}
@@ -268,7 +268,7 @@ function Index() {
           color={state.homeColor}
           onNameChange={setHomeTeam}
           onColorChange={setHomeColor}
-          onAdjustScore={adjustHomeScore}
+          onAdjustScore={(d) => (d > 0 ? guardTimer(() => adjustHomeScore(d))() : adjustHomeScore(d))}
           disabled={state.isGameOver}
           isKicking={state.halfInning === "bottom"}
           dimInactive={timerStarted}
@@ -372,7 +372,7 @@ function Index() {
         <Counter
           label="Balls"
           value={state.balls}
-          onAdd={addBall}
+          onAdd={guardTimer(addBall)}
           onRemove={removeBall}
           max={4}
           disabled={state.isGameOver}
@@ -382,7 +382,7 @@ function Index() {
         <Counter
           label="Strikes"
           value={state.strikes}
-          onAdd={addStrike}
+          onAdd={guardTimer(addStrike)}
           onRemove={removeStrike}
           max={3}
           disabled={state.isGameOver}
@@ -392,7 +392,7 @@ function Index() {
         <Counter
           label="Fouls"
           value={state.fouls}
-          onAdd={addFoul}
+          onAdd={guardTimer(addFoul)}
           onRemove={removeFoul}
           max={3}
           disabled={state.isGameOver}
@@ -402,7 +402,7 @@ function Index() {
         <Counter
           label="Outs"
           value={state.outs}
-          onAdd={addOut}
+          onAdd={guardTimer(addOut)}
           onRemove={removeOut}
           max={3}
           disabled={state.isGameOver}
