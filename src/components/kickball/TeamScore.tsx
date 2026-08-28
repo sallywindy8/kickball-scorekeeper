@@ -46,7 +46,14 @@ export function TeamScore({
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger
             className="mt-0.5 h-6 w-6 shrink-0 rounded-full border-2 border-current/40 shadow-inner"
-            style={{ backgroundColor: color || "transparent" }}
+            style={
+              color
+                ? { backgroundColor: color }
+                : {
+                    background:
+                      "conic-gradient(from 0deg, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #6366f1, #a855f7, #ef4444)",
+                  }
+            }
             aria-label={`Pick ${label} team color`}
           />
           <PopoverContent className="w-72 p-3">
