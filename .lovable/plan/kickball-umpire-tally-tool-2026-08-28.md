@@ -1,11 +1,13 @@
 # Kickball Umpire Tally Tool
 
 ## Overview
+
 A single-page web app designed for kickball umpires to track Balls, Strikes, Fouls, Outs, innings, score, and game time. Optimized for mobile use with large tap targets and high contrast. No login or persistence: open the app, set team names, start the timer, and tally one game. A reset control clears everything for the next game.
 
 ## Features
 
 ### Core tally logic
+
 - Balls: increment 0-4. At 4, the batter walks, Balls resets to 0.
 - Strikes: increment 0-3. At 3, it adds 1 Out, Strikes resets to 0.
 - Fouls: increment 0-3. At 3, it adds 1 Out, Fouls resets to 0. Fouls never count as Strikes.
@@ -15,18 +17,22 @@ A single-page web app designed for kickball umpires to track Balls, Strikes, Fou
   - After bottom of 7th inning with 3 Outs, game ends.
 
 ### Score and teams
+
 - Editable team names for "Home" and "Away".
 - Score counters (+ / -) for each team.
 
 ### Game timer
+
 - Start / pause / reset timer.
 - Display as MM:SS from first tap of Start.
 
 ### Inning display
+
 - Show "Top" or "Bottom" and current inning number (1-7).
 - Visual indicator of which half-inning is active.
 
 ### Reset
+
 - "New Game" button opens a confirmation dialog asking if the umpire is sure they want to reset; only after confirmation does it clear team names to defaults, score, counts, inning, and timer.
 
 ## UI/UX direction
