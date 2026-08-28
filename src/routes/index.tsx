@@ -170,8 +170,13 @@ function Index() {
           role="status"
           className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-6"
         >
-          <div className="rounded-3xl bg-red-600 px-8 py-6 text-center text-3xl font-black uppercase leading-tight tracking-wide text-white shadow-2xl">
-            {overlayFlash.text}
+          <div className="rounded-3xl bg-red-600 px-8 py-6 text-center text-white shadow-2xl">
+            <p className="text-3xl font-black uppercase leading-tight tracking-wide">
+              {overlayFlash.text}
+            </p>
+            {overlayFlash.description && (
+              <p className="mt-2 text-base font-bold opacity-95">{overlayFlash.description}</p>
+            )}
           </div>
         </div>
       )}
