@@ -136,6 +136,23 @@ function withRulePrompt(next: GameState): GameState {
   const lead = Math.abs(away - home);
   const leader = away > home ? next.awayTeam || "Away" : next.homeTeam || "Home";
 
+  // Walk-off: in the bottom of the last inning, once Home takes the lead the
+  // game is over — but the umpire may override and keep playing.
+  if (isFinal(next) && next.halfInning === "bottom" && home > away && !next.isGameOver) {
+    const key = "walkoff";
+    if (!next.answered.includes(key)) {
+      return {
+        ...next,
+        prompt: {
+          kind: "walkoff",
+          title: "Home team takes the lead!",
+          description: `${next.homeTeam || "Home"} leads ${home} - ${away} in the bottom of the last inning. The game is over. End the game now or keep playing?`,
+        },
+        answered: [...next.answered, key],
+      };
+    }
+  }
+
   // Mercy rules take priority over the per-inning run cap — but never in the
   // final inning, since the trailing team has no run cap and can always come back.
   if (!isFinal(next)) {
