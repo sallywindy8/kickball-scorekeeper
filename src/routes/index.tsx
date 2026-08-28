@@ -152,7 +152,7 @@ function Index() {
   const overtime = seconds >= FIFTY_FIVE_MINUTES && !state.isGameOver;
 
   return (
-    <main className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-2 bg-background p-2.5 text-foreground">
+    <main className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-1.5 bg-background p-2 text-foreground">
       {overlayFlash && (
         <div
           role="status"
@@ -181,7 +181,7 @@ function Index() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <section className="grid grid-cols-2 gap-3">
+      <section className="grid grid-cols-2 gap-2">
         <TeamScore
           label="Away"
           name={state.awayTeam}
