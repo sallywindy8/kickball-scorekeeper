@@ -1,6 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 type HalfInning = "top" | "bottom";
+
+export interface Flash {
+  counter: "balls" | "strikes" | "fouls" | "outs";
+  text: string;
+}
 
 export interface GameState {
   awayTeam: string;
@@ -14,11 +19,13 @@ export interface GameState {
   fouls: number;
   outs: number;
   isGameOver: boolean;
-  /** True briefly after the 4th ball — drives the "Walk" flourish. */
-  showWalk: boolean;
+  /** Temporary flourish badge shown over a counter (auto-cleared). */
+  flash: Flash | null;
 }
 
 const MAX_INNINGS = 7;
+const MAX_FOULS = 4;
+const MAX_HISTORY = 100;
 
 const initialState: GameState = {
   awayTeam: "Away",
@@ -32,24 +39,26 @@ const initialState: GameState = {
   fouls: 0,
   outs: 0,
   isGameOver: false,
-  showWalk: false,
+  flash: null,
 };
-
-const MAX_FOULS = 4;
-const MAX_HISTORY = 100;
 
 export function useKickballGame() {
   const [state, setState] = useState<GameState>(initialState);
   const [history, setHistory] = useState<GameState[]>([]);
 
-  // Push current state onto the undo stack, then apply the update.
+  // Ref mirror of state so history pushes happen outside the setState
+  // updater (updaters are double-invoked in dev, which broke undo).
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
   const apply = useCallback((updater: (prev: GameState) => GameState) => {
-    setState((prev) => {
-      const next = updater(prev);
-      if (next === prev) return prev;
-      setHistory((h) => [...h.slice(-MAX_HISTORY + 1), prev]);
-      return next;
-    });
+    const prev = stateRef.current;
+    const next = updater(prev);
+    if (next === prev) return;
+    setHistory((h) => [...h.slice(-MAX_HISTORY + 1), prev]);
+    setState(next);
   }, []);
 
   const undo = useCallback(() => {
@@ -74,14 +83,14 @@ export function useKickballGame() {
       if (prev.isGameOver) return prev;
       const nextBalls = prev.balls + 1;
       if (nextBalls >= 4) {
-        return { ...prev, balls: 0, showWalk: true };
+        return { ...prev, balls: 0, flash: { counter: "balls", text: "Walk" } };
       }
       return { ...prev, balls: nextBalls };
     });
   }, [apply]);
 
-  const clearWalk = useCallback(() => {
-    setState((prev) => (prev.showWalk ? { ...prev, showWalk: false } : prev));
+  const clearFlash = useCallback(() => {
+    setState((prev) => (prev.flash ? { ...prev, flash: null } : prev));
   }, []);
 
   const removeBall = useCallback(() => {
@@ -93,7 +102,13 @@ export function useKickballGame() {
       if (prev.isGameOver) return prev;
       const nextStrikes = prev.strikes + 1;
       if (nextStrikes >= 3) {
-        return addOutImpl({ ...prev, strikes: 0 });
+        const { state: next, halfEnded } = addOutImpl({ ...prev, strikes: 0 });
+        return {
+          ...next,
+          flash: halfEnded
+            ? { counter: "outs", text: "End Half Inning" }
+            : { counter: "strikes", text: "+1 Out" },
+        };
       }
       return { ...prev, strikes: nextStrikes };
     });
@@ -108,7 +123,13 @@ export function useKickballGame() {
       if (prev.isGameOver) return prev;
       const nextFouls = prev.fouls + 1;
       if (nextFouls >= MAX_FOULS) {
-        return addOutImpl({ ...prev, fouls: 0 });
+        const { state: next, halfEnded } = addOutImpl({ ...prev, fouls: 0 });
+        return {
+          ...next,
+          flash: halfEnded
+            ? { counter: "outs", text: "End Half Inning" }
+            : { counter: "fouls", text: "+1 Out" },
+        };
       }
       return { ...prev, fouls: nextFouls };
     });
@@ -121,7 +142,11 @@ export function useKickballGame() {
   const addOut = useCallback(() => {
     apply((prev) => {
       if (prev.isGameOver) return prev;
-      return addOutImpl(prev);
+      const { state: next, halfEnded } = addOutImpl(prev);
+      if (halfEnded) {
+        return { ...next, flash: { counter: "outs", text: "End Half Inning" } };
+      }
+      return next;
     });
   }, [apply]);
 
@@ -171,38 +196,34 @@ export function useKickballGame() {
     adjustHomeScore,
     newGame,
     undo,
-    clearWalk,
+    clearFlash,
   };
 }
 
-function addOutImpl(current: GameState): GameState {
+function addOutImpl(current: GameState): { state: GameState; halfEnded: boolean } {
   const nextOuts = current.outs + 1;
   if (nextOuts < 3) {
-    return { ...current, outs: nextOuts };
+    return { state: { ...current, outs: nextOuts }, halfEnded: false };
   }
 
   // Three outs: end the half-inning.
   if (current.halfInning === "top") {
     return {
-      ...current,
-      outs: 0,
-      halfInning: "bottom",
+      state: { ...current, outs: 0, halfInning: "bottom" },
+      halfEnded: true,
     };
   }
 
   // Bottom of the inning.
   if (current.inning >= MAX_INNINGS) {
     return {
-      ...current,
-      outs: 3,
-      isGameOver: true,
+      state: { ...current, outs: 3, isGameOver: true },
+      halfEnded: true,
     };
   }
 
   return {
-    ...current,
-    inning: current.inning + 1,
-    halfInning: "top",
-    outs: 0,
+    state: { ...current, inning: current.inning + 1, halfInning: "top", outs: 0 },
+    halfEnded: true,
   };
 }

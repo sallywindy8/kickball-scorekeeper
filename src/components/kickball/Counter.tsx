@@ -35,9 +35,7 @@ export function Counter({
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-        {label}
-      </span>
+      <span className="text-base font-bold uppercase tracking-wider text-foreground">{label}</span>
       <div
         className={cn(
           "relative flex h-20 w-20 items-center justify-center rounded-2xl text-5xl font-bold shadow-sm",

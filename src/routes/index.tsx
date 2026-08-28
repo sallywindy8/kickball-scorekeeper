@@ -50,7 +50,7 @@ function Index() {
     adjustHomeScore,
     newGame,
     undo,
-    clearWalk,
+    clearFlash,
   } = useKickballGame();
 
   const { formattedTime, isRunning, start, pause, reset: resetTimer } = useTimer();
@@ -77,12 +77,12 @@ function Index() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [state]);
 
-  // Auto-clear the "Walk" flourish after a few seconds.
+  // Auto-clear flourish badges (Walk, +1 Out, End Half Inning) after 2s.
   useEffect(() => {
-    if (!state.showWalk) return;
-    const t = setTimeout(clearWalk, 3000);
+    if (!state.flash) return;
+    const t = setTimeout(clearFlash, 2000);
     return () => clearTimeout(t);
-  }, [state.showWalk, clearWalk]);
+  }, [state.flash, clearFlash]);
 
   const handleNewGame = () => {
     newGame();
@@ -187,7 +187,7 @@ function Index() {
           onRemove={removeBall}
           max={4}
           disabled={state.isGameOver}
-          badge={state.showWalk ? "Walk" : undefined}
+          badge={state.flash?.counter === "balls" ? state.flash.text : undefined}
         />
         <Counter
           label="Strikes"
@@ -196,6 +196,7 @@ function Index() {
           onRemove={removeStrike}
           max={3}
           disabled={state.isGameOver}
+          badge={state.flash?.counter === "strikes" ? state.flash.text : undefined}
         />
         <Counter
           label="Fouls"
@@ -204,7 +205,7 @@ function Index() {
           onRemove={removeFoul}
           max={4}
           disabled={state.isGameOver}
-          variant="foul"
+          badge={state.flash?.counter === "fouls" ? state.flash.text : undefined}
         />
         <Counter
           label="Outs"
@@ -214,6 +215,7 @@ function Index() {
           max={3}
           disabled={state.isGameOver}
           variant="out"
+          badge={state.flash?.counter === "outs" ? state.flash.text : undefined}
         />
       </section>
 
