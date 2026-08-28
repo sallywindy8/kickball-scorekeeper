@@ -10,6 +10,8 @@ interface CounterProps {
   max?: number;
   disabled?: boolean;
   variant?: "default" | "outline" | "foul" | "out";
+  /** Temporary badge shown over the count, e.g. "Walk" on the 4th ball. */
+  badge?: string;
 }
 
 export function Counter({
@@ -20,6 +22,7 @@ export function Counter({
   max,
   disabled = false,
   variant = "default",
+  badge,
 }: CounterProps) {
   const isAtMax = max !== undefined && value >= max;
 
