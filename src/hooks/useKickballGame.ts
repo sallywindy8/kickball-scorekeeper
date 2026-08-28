@@ -150,7 +150,7 @@ function withRulePrompt(next: GameState): GameState {
         prompt: {
           kind: "walkoff",
           title: "Home team takes the lead!",
-          description: `${next.homeTeam || "Home"} leads ${home} - ${away} in the bottom of the last inning. The game is over. End the game now or keep playing?`,
+          description: `Final score: ${scoreLine(next)}. ${next.homeTeam || "Home"} takes the lead in the bottom of the last inning. End the game now or keep playing?`,
         },
         answered: [...next.answered, key],
       };
