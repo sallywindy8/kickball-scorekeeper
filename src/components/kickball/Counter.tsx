@@ -35,7 +35,7 @@ export function Counter({
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+      <span className="text-base font-bold uppercase tracking-wider text-foreground">
         {label}
       </span>
       <div
