@@ -126,11 +126,9 @@ function advanceHalf(prev: GameState): GameState {
   return { ...cleared, inning: prev.inning + 1, halfInning: "top" };
 }
 
-/** Consecutive balls at the end of the current at-bat's pitch log. */
-function currentBallStreak(log: GameState["pitchLog"]): number {
-  let streak = 0;
-  for (let i = log.length - 1; i >= 0 && log[i] === "ball"; i--) streak++;
-  return streak;
+/** True when the at-bat was a four-pitch walk: every pitch was a ball. */
+function isFourPitchWalk(log: GameState["pitchLog"]): boolean {
+  return log.length === 4 && log.every((p) => p === "ball");
 }
 
 /** Remove the most recent occurrence of a pitch from the log. */
@@ -302,8 +300,8 @@ export function useKickballGame() {
       const nextBalls = prev.balls + 1;
       const log = [...prev.pitchLog, "ball" as const];
       if (nextBalls >= 4) {
-        // Four consecutive balls in one at-bat is a two-base walk.
-        const twoBases = currentBallStreak(log) >= 4;
+        // Two bases ONLY on a four-pitch walk (no strikes/fouls at all).
+        const twoBases = isFourPitchWalk(log);
         return {
           ...prev,
           balls: 0,
@@ -402,7 +400,14 @@ export function useKickballGame() {
   const addOut = useCallback(() => {
     apply((prev) => {
       if (prev.isGameOver) return prev;
-      const { state: next, halfEnded } = addOutImpl(prev);
+      // A manual out (e.g. caught kick) also ends the at-bat: reset B/S/F.
+      const { state: next, halfEnded } = addOutImpl({
+        ...prev,
+        balls: 0,
+        strikes: 0,
+        fouls: 0,
+        pitchLog: [],
+      });
       if (halfEnded) {
         return { ...next, flash: endFlash(prev) };
       }
