@@ -4,6 +4,8 @@
 //     nitro (build-only using cloudflare as a default target), VITE_* env injection, @ path alias,
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
+import { writeFileSync } from "node:fs";
+
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 // Set STATIC_BUILD=1 (and optionally VITE_BASE_PATH) to emit a fully static
@@ -27,8 +29,7 @@ export default defineConfig({
               // index.mjs whose fetch expects Cloudflare (env, ctx) arguments.
               // Emit an alias that stubs those bindings so the SPA shell can
               // be prerendered in a plain Node context.
-              const fs = require("node:fs");
-              fs.writeFileSync(
+              writeFileSync(
                 "dist/server/server.js",
                 [
                   'import entry from "./index.mjs";',
