@@ -23,13 +23,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "WAKA Scorekeeping" },
+      { title: "Scorekeeping" },
       {
         name: "description",
         content:
           "Mobile-first tally tool for kickball umpires. Track balls, strikes, fouls, outs, score, innings, and game time.",
       },
-      { property: "og:title", content: "WAKA Scorekeeping" },
+      { property: "og:title", content: "Scorekeeping" },
       {
         property: "og:description",
         content:
@@ -177,7 +177,7 @@ function Index() {
     <main className="dark relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-1 bg-background p-2 text-foreground">
       <header className="flex items-center justify-between gap-2">
         <h1 className="bg-gradient-to-r from-primary to-count-accent bg-clip-text text-xl font-black uppercase tracking-widest text-transparent">
-          WAKA Scorekeeping
+          Scorekeeping
         </h1>
         <a
           href="https://kickball.com/rules/"
