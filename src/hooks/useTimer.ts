@@ -28,7 +28,10 @@ function loadTimer(): TimerState | null {
 }
 
 const elapsed = (t: TimerState) =>
-  Math.max(0, Math.floor(t.accumulated + (t.runningSince ? (Date.now() - t.runningSince) / 1000 : 0)));
+  Math.max(
+    0,
+    Math.floor(t.accumulated + (t.runningSince ? (Date.now() - t.runningSince) / 1000 : 0)),
+  );
 
 export function useTimer() {
   const [timer, setTimer] = useState<TimerState>(initialTimer);
