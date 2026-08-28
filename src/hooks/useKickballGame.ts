@@ -203,6 +203,7 @@ export function useKickballGame() {
     removeOut,
     adjustAwayScore,
     adjustHomeScore,
+    resetBSF,
     newGame,
     undo,
     clearFlash,
