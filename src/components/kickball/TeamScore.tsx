@@ -25,6 +25,7 @@ export function TeamScore({
   onColorChange,
   onAdjustScore,
   disabled = false,
+  isKicking = true,
 }: TeamScoreProps) {
   const [open, setOpen] = useState(false);
   const fg = color ? readableText(color) : undefined;
@@ -33,7 +34,10 @@ export function TeamScore({
 
   return (
     <div
-      className="flex flex-1 flex-col items-center gap-1 rounded-2xl border border-border bg-card p-2 shadow-sm"
+      className={cn(
+        "flex flex-1 flex-col items-center gap-1 rounded-2xl border border-border bg-card p-2 shadow-sm transition-opacity",
+        !isKicking && "opacity-60",
+      )}
       style={cardStyle}
     >
       <div className="grid w-full grid-cols-[1.5rem_1fr_1.5rem] items-start gap-1">
