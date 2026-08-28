@@ -301,7 +301,7 @@ function Index() {
       <div className="flex justify-end">
         <button
           type="button"
-          className="rounded-lg bg-muted px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground shadow-sm transition-colors active:bg-muted/70 disabled:opacity-40"
+          className="rounded-lg bg-destructive/15 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-destructive shadow-sm transition-colors active:bg-destructive/25 disabled:opacity-40"
           onClick={resetBSF}
           disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
         >
