@@ -6,10 +6,55 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// Set STATIC_BUILD=1 (and optionally VITE_BASE_PATH) to emit a fully static
+// SPA shell for static-only hosts such as GitHub Pages. The normal build keeps
+// SSR with the custom server entry below.
+const isStaticBuild = process.env["STATIC_BUILD"] === "1";
+
 export default defineConfig({
-  tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
-    server: { entry: "server" },
+  vite: {
+    // Base path for static hosting (e.g. GitHub Pages project sites served
+    // from /<repo-name>/). Defaults to "/" for local dev and Lovable preview.
+    base: process.env["VITE_BASE_PATH"] ?? "/",
+    plugins: isStaticBuild
+      ? [
+          {
+            name: "static-build-server-alias",
+            apply: "build" as const,
+            closeBundle() {
+              // The prerender step imports dist/server/server.js, but the nitro
+              // build emits index.mjs. Provide an alias so SPA shell prerendering
+              // can load the server entry.
+              const fs = require("node:fs");
+              fs.writeFileSync(
+                "dist/server/server.js",
+                'export { default } from "./index.mjs";\n',
+              );
+            },
+          },
+        ]
+      : [],
   },
+  // Static builds run outside the Lovable sandbox (GitHub Actions), where the
+  // default Cloudflare worker preset would require runtime bindings that do
+  // not exist during prerendering. Use a plain Node server preset instead.
+  ...(isStaticBuild
+    ? {
+        nitro: {
+          preset: "node-server",
+          output: { dir: "dist", serverDir: "dist/server", publicDir: "dist/client" },
+        },
+      }
+    : {}),
+  tanstackStart: isStaticBuild
+    ? {
+        // Static SPA mode: prerender a static index.html shell; all app logic
+        // runs client-side, so no server runtime is needed on GitHub Pages.
+        spa: { enabled: true },
+      }
+    : {
+        // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
+        // nitro/vite builds from this
+        server: { entry: "server" },
+      },
 });
