@@ -54,8 +54,8 @@ export function useKickballGame() {
 
   const undo = useCallback(() => {
     setHistory((h) => {
-      if (h.length === 0) return h;
       const prev = h[h.length - 1];
+      if (prev === undefined) return h;
       setState(prev);
       return h.slice(0, -1);
     });
