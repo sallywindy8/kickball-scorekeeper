@@ -83,6 +83,7 @@ function Index() {
   } = useKickballGame();
 
   const { formattedTime, seconds, isRunning, start, pause, reset: resetTimer } = useTimer();
+  const timerStarted = seconds > 0 || isRunning;
 
   // Warn umpires if they accidentally refresh mid-game.
   useEffect(() => {
