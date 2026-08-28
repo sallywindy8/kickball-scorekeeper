@@ -137,6 +137,7 @@ export function TeamScore({
             }
           }}
           rows={1}
+          data-h={nameHeight}
           style={{ height: nameHeight }}
           className="w-full min-w-0 resize-none overflow-hidden rounded-md border-0 bg-transparent py-0.5 text-center text-xs font-extrabold uppercase leading-tight tracking-wider outline-none placeholder:opacity-60 focus-visible:ring-1 focus-visible:ring-current"
           placeholder={label}
