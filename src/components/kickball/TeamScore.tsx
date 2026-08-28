@@ -91,7 +91,7 @@ export function TeamScore({
           rows={1}
           style={{ fieldSizing: "content" }}
           className="min-h-[1.25rem] w-full min-w-0 resize-none overflow-hidden rounded-md border-0 bg-transparent py-0.5 text-center text-xs font-extrabold uppercase leading-tight tracking-wider outline-none placeholder:opacity-60 focus-visible:ring-1 focus-visible:ring-current"
-          placeholder={label}
+          placeholder="[ENTER TEAM NAME]"
         />
         <div aria-hidden="true" />
       </div>
