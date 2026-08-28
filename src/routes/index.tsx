@@ -4,7 +4,6 @@ import { Pause, Play, RotateCcw, Undo2 } from "lucide-react";
 
 import { Counter } from "@/components/kickball/Counter";
 import { LineScore } from "@/components/kickball/LineScore";
-import { NewGameDialog } from "@/components/kickball/NewGameDialog";
 import { TeamScore } from "@/components/kickball/TeamScore";
 import {
   AlertDialog,
@@ -15,6 +14,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useKickballGame } from "@/hooks/useKickballGame";
 import { useTimer } from "@/hooks/useTimer";
