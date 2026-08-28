@@ -79,7 +79,7 @@ const initialState: GameState = {
 export const total = (runs: number[]) => runs.reduce((a, b) => a + b, 0);
 
 function scoreLine(s: GameState): string {
-  return `${s.awayTeam || "Away"} ${total(s.awayRuns)} - ${total(s.homeRuns)} ${s.homeTeam || "Home"}`;
+  return `${s.awayTeam || "Away"} ${total(s.awayRuns)} - ${s.homeTeam || "Home"} ${total(s.homeRuns)}`;
 }
 
 const isFinal = (s: GameState) => s.finalInning || s.inning >= MAX_INNINGS;
