@@ -321,6 +321,16 @@ function Index() {
           <p className="text-sm opacity-90">
             Final score: {state.awayTeam} {awayScore} - {state.homeTeam} {homeScore}
           </p>
+          <p className="mt-2 text-xs font-bold uppercase tracking-wider opacity-80">
+            Score a new game?
+          </p>
+          <button
+            type="button"
+            onClick={handleNewGame}
+            className="mt-1.5 w-full rounded-xl bg-primary-foreground py-2.5 text-sm font-extrabold uppercase tracking-wider text-primary shadow transition-colors active:bg-primary-foreground/80"
+          >
+            New Game
+          </button>
         </div>
       )}
 
@@ -389,7 +399,34 @@ function Index() {
         >
           <Undo2 className="h-4 w-4" /> Undo
         </button>
-        <NewGameDialog onConfirm={handleNewGame} className="flex-1 py-2.5 text-xs" />
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button
+              type="button"
+              disabled={state.isGameOver}
+              className="flex-1 rounded-2xl bg-destructive py-2.5 text-xs font-extrabold uppercase tracking-wider text-destructive-foreground shadow-lg transition-colors active:bg-destructive/90 disabled:opacity-40"
+            >
+              End Game
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="max-w-sm rounded-2xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle>End the game?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will end the game now and show the final score.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel className="rounded-xl">No, keep scoring</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={endGame}
+                className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Yes, end game
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </section>
     </main>
   );
