@@ -9,6 +9,8 @@ export interface Flash {
   tone?: "green" | "red";
   /** Show as a large centered full-screen overlay instead of a small badge. */
   overlay?: boolean;
+  /** Optional extra line shown beneath the main text on overlay flashes. */
+  description?: string;
 }
 
 export type PromptKind = "runCap" | "mercy12" | "mercy15" | "time50" | "time55" | "walkoff";
