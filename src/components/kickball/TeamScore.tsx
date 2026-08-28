@@ -20,7 +20,7 @@ export function TeamScore({
   disabled = false,
 }: TeamScoreProps) {
   return (
-    <div className="flex flex-1 flex-col items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-sm">
+    <div className="flex flex-1 flex-col items-center gap-1 rounded-2xl border border-border bg-card p-2 shadow-sm">
       <label htmlFor={`team-name-${label}`} className="sr-only">
         {label} team name
       </label>
@@ -29,32 +29,32 @@ export function TeamScore({
         type="text"
         value={name}
         onChange={(e) => onNameChange(e.target.value)}
-        className="h-9 border-0 bg-transparent text-center text-lg font-semibold focus-visible:ring-1"
+        className="h-7 border-0 bg-transparent text-center text-sm font-extrabold uppercase tracking-widest focus-visible:ring-1"
         placeholder={label}
       />
-      <div className="flex w-full items-center justify-between gap-2">
+      <div className="flex w-full items-center justify-between gap-1">
         <Button
           type="button"
           variant="outline"
           size="icon"
-          className="h-12 w-12 rounded-full"
+          className="h-10 w-10 rounded-full"
           onClick={() => onAdjustScore(-1)}
           disabled={disabled || score <= 0}
           aria-label={`Decrease ${name} score`}
         >
-          <Minus className="h-5 w-5" />
+          <Minus className="h-4 w-4" />
         </Button>
-        <span className="min-w-[3ch] text-center text-4xl font-bold">{score}</span>
+        <span className="min-w-[3ch] text-center text-3xl font-black tabular-nums">{score}</span>
         <Button
           type="button"
           variant="outline"
           size="icon"
-          className="h-12 w-12 rounded-full"
+          className="h-10 w-10 rounded-full"
           onClick={() => onAdjustScore(1)}
           disabled={disabled}
           aria-label={`Increase ${name} score`}
         >
-          <Plus className="h-5 w-5" />
+          <Plus className="h-4 w-4" />
         </Button>
       </div>
     </div>
