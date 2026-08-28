@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Pause, Play, RotateCcw, Undo2 } from "lucide-react";
 
 import { Counter } from "@/components/kickball/Counter";
@@ -85,6 +85,14 @@ function Index() {
 
   const { formattedTime, seconds, isRunning, start, pause, reset: resetTimer } = useTimer();
   const timerStarted = seconds > 0 || isRunning;
+
+  // Fail-safe: if the ump starts counting/scoring before starting the timer,
+  // nudge them once per action until the clock is running.
+  const [timerReminder, setTimerReminder] = useState(false);
+  const guardTimer = (action: () => void) => () => {
+    if (!timerStarted && !state.isGameOver) setTimerReminder(true);
+    action();
+  };
 
   // Warn umpires if they accidentally refresh mid-game.
   useEffect(() => {
@@ -213,6 +221,29 @@ function Index() {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={timerReminder} onOpenChange={setTimerReminder}>
+        <AlertDialogContent className="max-w-sm rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Timer not started</AlertDialogTitle>
+            <AlertDialogDescription>
+              The game timer has not been started yet. Would you like to start it now?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel className="rounded-xl">Not now</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl"
+              onClick={() => {
+                start();
+                setTimerReminder(false);
+              }}
+            >
+              Yes, start timer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <AlertDialog open={state.isGameOver}>
         <AlertDialogContent className="max-w-sm rounded-2xl">
           <AlertDialogHeader>
@@ -246,7 +277,9 @@ function Index() {
           color={state.awayColor}
           onNameChange={setAwayTeam}
           onColorChange={setAwayColor}
-          onAdjustScore={adjustAwayScore}
+          onAdjustScore={(d) =>
+            d > 0 ? guardTimer(() => adjustAwayScore(d))() : adjustAwayScore(d)
+          }
           disabled={state.isGameOver}
           isKicking={state.halfInning === "top"}
           dimInactive={timerStarted}
@@ -258,7 +291,9 @@ function Index() {
           color={state.homeColor}
           onNameChange={setHomeTeam}
           onColorChange={setHomeColor}
-          onAdjustScore={adjustHomeScore}
+          onAdjustScore={(d) =>
+            d > 0 ? guardTimer(() => adjustHomeScore(d))() : adjustHomeScore(d)
+          }
           disabled={state.isGameOver}
           isKicking={state.halfInning === "bottom"}
           dimInactive={timerStarted}
@@ -362,7 +397,7 @@ function Index() {
         <Counter
           label="Balls"
           value={state.balls}
-          onAdd={addBall}
+          onAdd={guardTimer(addBall)}
           onRemove={removeBall}
           max={4}
           disabled={state.isGameOver}
@@ -372,7 +407,7 @@ function Index() {
         <Counter
           label="Strikes"
           value={state.strikes}
-          onAdd={addStrike}
+          onAdd={guardTimer(addStrike)}
           onRemove={removeStrike}
           max={3}
           disabled={state.isGameOver}
@@ -382,7 +417,7 @@ function Index() {
         <Counter
           label="Fouls"
           value={state.fouls}
-          onAdd={addFoul}
+          onAdd={guardTimer(addFoul)}
           onRemove={removeFoul}
           max={3}
           disabled={state.isGameOver}
@@ -392,7 +427,7 @@ function Index() {
         <Counter
           label="Outs"
           value={state.outs}
-          onAdd={addOut}
+          onAdd={guardTimer(addOut)}
           onRemove={removeOut}
           max={3}
           disabled={state.isGameOver}
