@@ -57,7 +57,7 @@ export function Counter({
           <span
             role="status"
             className={cn(
-              "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-scale-in whitespace-nowrap rounded-full px-3 py-1 text-sm font-black uppercase tracking-widest text-white shadow-lg",
+              "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-3 py-1 text-sm font-black uppercase tracking-widest text-white shadow-lg",
               badgeTone === "red" ? "bg-red-600" : "bg-green-600",
             )}
           >
