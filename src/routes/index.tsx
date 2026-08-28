@@ -223,6 +223,29 @@ function Index() {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={timerReminder} onOpenChange={setTimerReminder}>
+        <AlertDialogContent className="max-w-sm rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Timer not started</AlertDialogTitle>
+            <AlertDialogDescription>
+              The game timer has not been started yet. Would you like to start it now?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel className="rounded-xl">Not now</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl"
+              onClick={() => {
+                start();
+                setTimerReminder(false);
+              }}
+            >
+              Yes, start timer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <AlertDialog open={state.isGameOver}>
         <AlertDialogContent className="max-w-sm rounded-2xl">
           <AlertDialogHeader>
