@@ -24,8 +24,8 @@ export default defineConfig({
   ...(isStaticBuild ? { nitro: false } : {}),
   tanstackStart: isStaticBuild
     ? {
-        // Static SPA mode: prerender a static index.html shell; all app logic
-        // runs client-side, so no server runtime is needed on GitHub Pages.
+        // Static SPA mode: prerender _shell.html; the Pages workflow copies it
+        // to index.html and 404.html, and all app logic runs client-side.
         spa: { enabled: true },
       }
     : {
