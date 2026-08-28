@@ -17,21 +17,11 @@ export default defineConfig({
     // from /<repo-name>/). Defaults to "/" for local dev and Lovable preview.
     base: process.env["VITE_BASE_PATH"] ?? "/",
   },
-  // GitHub Pages is a static host. Its dedicated Nitro preset generates the
-  // static artifact without requiring a deployable server bundle. Lovable's
-  // normal preview and production builds continue using the default runtime.
-  ...(isStaticBuild
-    ? {
-        nitro: {
-          preset: "github-pages",
-          output: {
-            dir: "dist",
-            publicDir: "dist/client",
-            serverDir: "dist/server",
-          },
-        },
-      }
-    : {}),
+  // TanStack SPA mode uses its own Vite server environment at build time to
+  // render the shell. GitHub Pages only receives dist/client, so the Nitro
+  // deployment adapter is neither needed nor appropriate for this build.
+  // Normal Lovable preview and production builds keep the default adapter.
+  ...(isStaticBuild ? { nitro: false } : {}),
   tanstackStart: isStaticBuild
     ? {
         // Static SPA mode: prerender a static index.html shell; all app logic
