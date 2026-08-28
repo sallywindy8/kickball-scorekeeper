@@ -472,7 +472,7 @@ export function useKickballGame() {
         prompt: {
           kind: "time55",
           title: "55 MIN REACHED",
-          description: "End game and revert to previous inning score?",
+          description: `Current score: ${scoreLine(prev)}. End game and revert to previous inning score?`,
         },
         answered: [...prev.answered, "time55"],
       };
