@@ -11,7 +11,7 @@ export interface Flash {
   overlay?: boolean;
 }
 
-export type PromptKind = "runCap" | "mercy12" | "mercy15" | "time50" | "time55";
+export type PromptKind = "runCap" | "mercy12" | "mercy15" | "time50" | "time55" | "walkoff";
 
 export interface GamePrompt {
   kind: PromptKind;
