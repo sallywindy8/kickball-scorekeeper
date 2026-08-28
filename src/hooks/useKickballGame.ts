@@ -183,7 +183,7 @@ function withRulePrompt(next: GameState): GameState {
           prompt: {
             kind: "mercy12",
             title: "Mercy rule: 12-run lead",
-            description: `${leader} leads by ${lead} in the ${ORDINALS[next.inning - 1]} inning. The mercy rule ends the game. End the game now or keep playing?`,
+            description: `Current score: ${scoreLine(next)}. ${leader} leads by ${lead} in the ${ORDINALS[next.inning - 1]} inning. The mercy rule ends the game. End the game now or keep playing?`,
           },
           answered: [...next.answered, key],
         };
