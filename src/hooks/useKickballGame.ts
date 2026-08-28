@@ -218,11 +218,20 @@ function withRulePrompt(next: GameState): GameState {
 }
 
 const STORAGE_KEY = "kickball-game-state";
+const REFRESH_KEY = "kickball-game-state-refresh";
 
 function loadState(): GameState | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    // A refresh leaves a sessionStorage backup; a true tab close wipes it.
+    let raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      raw = window.sessionStorage.getItem(REFRESH_KEY);
+      if (raw) {
+        window.localStorage.setItem(STORAGE_KEY, raw);
+        window.sessionStorage.removeItem(REFRESH_KEY);
+      }
+    }
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<GameState>;
     if (!Array.isArray(parsed.awayRuns) || !Array.isArray(parsed.homeRuns)) return null;
@@ -260,6 +269,23 @@ export function useKickballGame() {
       /* storage unavailable — keep playing in memory */
     }
   }, [state, hydrated]);
+
+  // On unload: stash to sessionStorage (survives a refresh in the same tab)
+  // and clear localStorage, so closing the tab/browser starts fresh.
+  useEffect(() => {
+    if (!hydrated) return;
+    const handleUnload = () => {
+      try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (raw) window.sessionStorage.setItem(REFRESH_KEY, raw);
+        window.localStorage.removeItem(STORAGE_KEY);
+      } catch {
+        /* storage unavailable */
+      }
+    };
+    window.addEventListener("pagehide", handleUnload);
+    return () => window.removeEventListener("pagehide", handleUnload);
+  }, [hydrated]);
 
   const apply = useCallback((updater: (prev: GameState) => GameState) => {
     const prev = stateRef.current;
