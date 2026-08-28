@@ -300,6 +300,8 @@ export function useKickballGame() {
         return {
           ...prev,
           balls: 0,
+          strikes: 0,
+          fouls: 0,
           pitchLog: [],
           flash: {
             counter: "balls",
