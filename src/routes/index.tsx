@@ -49,6 +49,7 @@ function Index() {
     removeOut,
     adjustAwayScore,
     adjustHomeScore,
+    resetBSF,
     newGame,
     undo,
     clearFlash,
@@ -91,7 +92,7 @@ function Index() {
   };
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-3 bg-background p-3 text-foreground">
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-2 bg-background p-3 text-foreground">
       <h1 className="text-center text-lg font-black tracking-tight">Umpire Tally</h1>
 
       <section className="grid grid-cols-2 gap-3">
@@ -173,7 +174,7 @@ function Index() {
         </div>
       )}
 
-      <section className="grid flex-1 grid-cols-2 content-center gap-3">
+      <section className="grid grid-cols-2 gap-2">
         <Counter
           label="Balls"
           value={state.balls}
@@ -213,16 +214,24 @@ function Index() {
         />
       </section>
 
-      <section className="flex gap-3">
+      <section className="mt-auto flex gap-2">
         <button
           type="button"
-          className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-muted py-3 text-sm font-extrabold uppercase tracking-wider text-muted-foreground transition-colors active:bg-muted/70 disabled:opacity-40"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-muted py-2.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground transition-colors active:bg-muted/70 disabled:opacity-40"
           onClick={undo}
           disabled={!canUndo}
         >
           <Undo2 className="h-4 w-4" /> Undo
         </button>
-        <NewGameDialog onConfirm={handleNewGame} className="flex-[2] py-3 text-sm" />
+        <button
+          type="button"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-muted py-2.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground transition-colors active:bg-muted/70 disabled:opacity-40"
+          onClick={resetBSF}
+          disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
+        >
+          Reset B/S/F
+        </button>
+        <NewGameDialog onConfirm={handleNewGame} className="flex-1 py-2.5 text-xs" />
       </section>
     </main>
   );
