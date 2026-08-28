@@ -5,16 +5,29 @@ import { cn } from "@/lib/utils";
 export const TEAM_COLORS = [
   { name: "None", value: "" },
   { name: "Red", value: "#dc2626" },
+  { name: "Coral", value: "#f43f5e" },
   { name: "Orange", value: "#ea580c" },
+  { name: "Amber", value: "#f59e0b" },
   { name: "Yellow", value: "#facc15" },
+  { name: "Lime", value: "#84cc16" },
   { name: "Green", value: "#16a34a" },
+  { name: "Emerald", value: "#059669" },
   { name: "Teal", value: "#0d9488" },
+  { name: "Cyan", value: "#06b6d4" },
+  { name: "Sky", value: "#0ea5e9" },
   { name: "Blue", value: "#2563eb" },
+  { name: "Indigo", value: "#4f46e5" },
   { name: "Navy", value: "#1e3a8a" },
   { name: "Purple", value: "#7c3aed" },
+  { name: "Violet", value: "#8b5cf6" },
+  { name: "Fuchsia", value: "#c026d3" },
   { name: "Pink", value: "#db2777" },
+  { name: "Rose", value: "#fb7185" },
+  { name: "Maroon", value: "#7f1d1d" },
+  { name: "Brown", value: "#92400e" },
   { name: "Black", value: "#111827" },
   { name: "Gray", value: "#6b7280" },
+  { name: "Slate", value: "#475569" },
   { name: "White", value: "#f8fafc" },
 ] as const;
 
@@ -65,11 +78,11 @@ export function TeamScore({
             style={{ backgroundColor: color || "transparent" }}
             aria-label={`Pick ${label} team color`}
           />
-          <PopoverContent className="w-56 p-3">
+          <PopoverContent className="w-72 p-3">
             <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
               {label} team color
             </p>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-6 gap-2">
               {TEAM_COLORS.map((c) => (
                 <button
                   key={c.name}
