@@ -174,7 +174,7 @@ function Index() {
         </div>
       )}
 
-      <section className="grid grid-cols-2 gap-2">
+      <section className="grid flex-1 grid-cols-2 gap-2">
         <Counter
           label="Balls"
           value={state.balls}

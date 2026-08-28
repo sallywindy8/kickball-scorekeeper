@@ -29,7 +29,7 @@ export function Counter({
   return (
     <div
       className={cn(
-        "relative flex flex-col items-center rounded-3xl border p-2 shadow-sm",
+        "relative flex h-full flex-col items-center justify-center rounded-3xl border p-2 shadow-sm",
         isOut ? "border-red-200 bg-red-50" : "border-border bg-card",
       )}
     >
