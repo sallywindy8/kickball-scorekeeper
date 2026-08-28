@@ -11,7 +11,7 @@ export interface Flash {
   overlay?: boolean;
 }
 
-export type PromptKind = "runCap" | "mercy12" | "mercy15" | "time50";
+export type PromptKind = "runCap" | "mercy12" | "mercy15" | "time50" | "time55";
 
 export interface GamePrompt {
   kind: PromptKind;
@@ -346,6 +346,46 @@ export function useKickballGame() {
     });
   }, []);
 
+  /** Clock passed 55:00 — the in-progress inning cannot count. */
+  const notifyFiftyFiveMinutes = useCallback(() => {
+    setState((prev) => {
+      if (prev.isGameOver || prev.answered.includes("time55") || prev.prompt) return prev;
+      return {
+        ...prev,
+        prompt: {
+          kind: "time55",
+          title: "55 minute mark",
+          description:
+            "The current inning has passed 55 minutes. Revert the score to the last completed inning and end the game, or keep playing?",
+        },
+        answered: [...prev.answered, "time55"],
+      };
+    });
+  }, []);
+
+  /** "Revert" answer to the 55-minute prompt: drop the in-progress inning. */
+  const revertToPreviousInning = useCallback(() => {
+    apply((prev) => {
+      const idx = prev.inning - 1;
+      const awayRuns = [...prev.awayRuns];
+      const homeRuns = [...prev.homeRuns];
+      awayRuns[idx] = 0;
+      homeRuns[idx] = 0;
+      return {
+        ...prev,
+        awayRuns,
+        homeRuns,
+        prompt: null,
+        balls: 0,
+        strikes: 0,
+        fouls: 0,
+        outs: 0,
+        isGameOver: true,
+        flash: { counter: "outs", text: "Game Over", overlay: true },
+      };
+    });
+  }, [apply]);
+
   const dismissPrompt = useCallback(() => {
     setState((prev) => (prev.prompt ? { ...prev, prompt: null } : prev));
   }, []);
@@ -402,6 +442,8 @@ export function useKickballGame() {
     resetBSF,
     setFinalInning,
     notifyFiftyMinutes,
+    notifyFiftyFiveMinutes,
+    revertToPreviousInning,
     dismissPrompt,
     endHalfInning,
     endGame,

@@ -71,6 +71,8 @@ function Index() {
     resetBSF,
     setFinalInning,
     notifyFiftyMinutes,
+    notifyFiftyFiveMinutes,
+    revertToPreviousInning,
     dismissPrompt,
     endHalfInning,
     endGame,
@@ -116,6 +118,11 @@ function Index() {
     if (seconds >= FIFTY_MINUTES) notifyFiftyMinutes();
   }, [seconds, notifyFiftyMinutes]);
 
+  // 55-minute mark: the in-progress inning cannot count.
+  useEffect(() => {
+    if (seconds >= FIFTY_FIVE_MINUTES) notifyFiftyFiveMinutes();
+  }, [seconds, notifyFiftyFiveMinutes]);
+
   const handleNewGame = () => {
     newGame();
     resetTimer();
@@ -135,17 +142,22 @@ function Index() {
         : "End inning"
       : prompt?.kind === "time50"
         ? "Yes, final inning"
-        : "End game";
+        : prompt?.kind === "time55"
+          ? "Revert & end game"
+          : "End game";
   const promptCancelLabel =
     prompt?.kind === "runCap"
       ? "Keep playing"
       : prompt?.kind === "time50"
         ? "Not yet"
-        : "Continue game";
+        : prompt?.kind === "time55"
+          ? "Keep playing"
+          : "Continue game";
   const handlePromptConfirm = () => {
     if (!prompt) return;
     if (prompt.kind === "runCap") endHalfInning();
     else if (prompt.kind === "time50") confirmFinalInning();
+    else if (prompt.kind === "time55") revertToPreviousInning();
     else endGame();
   };
 
