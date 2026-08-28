@@ -115,6 +115,20 @@ function advanceHalf(prev: GameState): GameState {
   return { ...cleared, inning: prev.inning + 1, halfInning: "top" };
 }
 
+/** Consecutive balls at the end of the current at-bat's pitch log. */
+function currentBallStreak(log: GameState["pitchLog"]): number {
+  let streak = 0;
+  for (let i = log.length - 1; i >= 0 && log[i] === "ball"; i--) streak++;
+  return streak;
+}
+
+/** Remove the most recent occurrence of a pitch from the log. */
+function removeLast(log: GameState["pitchLog"], pitch: "ball" | "strike" | "foul") {
+  const idx = log.lastIndexOf(pitch);
+  if (idx === -1) return log;
+  return [...log.slice(0, idx), ...log.slice(idx + 1)];
+}
+
 /** Attach a league-rule prompt to the state if one now applies. */
 function withRulePrompt(next: GameState): GameState {
   const away = total(next.awayRuns);
