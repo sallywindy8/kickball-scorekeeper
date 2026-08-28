@@ -40,13 +40,21 @@ export function Counter({
       </span>
       <div
         className={cn(
-          "flex h-20 w-20 items-center justify-center rounded-2xl text-5xl font-bold shadow-sm",
+          "relative flex h-20 w-20 items-center justify-center rounded-2xl text-5xl font-bold shadow-sm",
           variant === "foul" && "bg-amber-500/10 text-amber-600",
           variant === "out" && "bg-destructive/10 text-destructive",
           variant !== "foul" && variant !== "out" && "bg-card text-foreground",
         )}
       >
         {value}
+        {badge && (
+          <span
+            role="status"
+            className="absolute -top-3 left-1/2 -translate-x-1/2 animate-bounce rounded-full bg-primary px-3 py-0.5 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-md"
+          >
+            {badge}
+          </span>
+        )}
       </div>
       <div className="flex gap-2">
         <Button
