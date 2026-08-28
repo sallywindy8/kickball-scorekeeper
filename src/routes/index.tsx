@@ -336,7 +336,7 @@ function Index() {
         </div>
         <button
           type="button"
-          className="flex flex-1 items-center justify-center rounded-xl bg-destructive/10 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-destructive shadow-sm transition-colors active:bg-destructive/20 disabled:opacity-40"
+          className="flex flex-1 items-center justify-center rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-destructive shadow-sm transition-colors active:bg-destructive/20 disabled:opacity-40"
           onClick={resetBSF}
           disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
         >
