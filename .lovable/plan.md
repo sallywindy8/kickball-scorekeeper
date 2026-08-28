@@ -27,7 +27,7 @@ A single-page web app designed for kickball umpires to track Balls, Strikes, Fou
 - Visual indicator of which half-inning is active.
 
 ### Reset
-- "New Game" button clears team names to defaults, score, counts, inning, and timer.
+- "New Game" button opens a confirmation dialog asking if the umpire is sure they want to reset; only after confirmation does it clear team names to defaults, score, counts, inning, and timer.
 
 ## UI/UX direction
 
