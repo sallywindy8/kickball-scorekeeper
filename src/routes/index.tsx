@@ -205,7 +205,8 @@ function Index() {
           onRemove={removeBall}
           max={4}
           disabled={state.isGameOver}
-          badge={state.flash?.counter === "balls" ? state.flash.text : undefined}
+          badge={badgeFor("balls")}
+          badgeTone="green"
         />
         <Counter
           label="Strikes"
@@ -214,16 +215,18 @@ function Index() {
           onRemove={removeStrike}
           max={3}
           disabled={state.isGameOver}
-          badge={state.flash?.counter === "strikes" ? state.flash.text : undefined}
+          badge={badgeFor("strikes")}
+          badgeTone="red"
         />
         <Counter
           label="Fouls"
           value={state.fouls}
           onAdd={addFoul}
           onRemove={removeFoul}
-          max={4}
+          max={3}
           disabled={state.isGameOver}
-          badge={state.flash?.counter === "fouls" ? state.flash.text : undefined}
+          badge={badgeFor("fouls")}
+          badgeTone="red"
         />
         <Counter
           label="Outs"
@@ -233,7 +236,8 @@ function Index() {
           max={3}
           disabled={state.isGameOver}
           variant="out"
-          badge={state.flash?.counter === "outs" ? state.flash.text : undefined}
+          badge={badgeFor("outs")}
+          badgeTone="red"
         />
       </section>
 
