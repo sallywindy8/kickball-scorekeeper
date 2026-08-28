@@ -29,29 +29,27 @@ export function Counter({
   const isAtMax = max !== undefined && value >= max;
   const isOut = variant === "out";
   const dotCount = max ?? 3;
-  const fillColor = isOut ? "bg-red-600" : "bg-red-600";
+  const accentClass = isOut ? "bg-outs" : "bg-count-accent";
+  const textClass = isOut ? "text-outs" : "text-count-accent";
 
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col items-center justify-center gap-1 rounded-3xl border p-2 shadow-sm",
-        isOut ? "border-red-200 bg-red-50" : "border-border bg-card",
+        "relative flex h-full flex-col items-center justify-center gap-0.5 rounded-2xl border p-1.5 shadow-sm",
+        isOut ? "border-destructive/30 bg-destructive/10" : "border-border bg-card",
       )}
     >
       <span
         className={cn(
-          "text-base font-black uppercase tracking-[0.14em]",
-          isOut ? "text-red-600" : "text-muted-foreground",
+          "text-sm font-black uppercase tracking-[0.14em]",
+          isOut ? textClass : "text-muted-foreground",
         )}
       >
         {label}
       </span>
       <div className="relative flex items-center justify-center">
         <span
-          className={cn(
-            "text-5xl font-black tabular-nums",
-            isOut ? "text-red-600" : "text-foreground",
-          )}
+          className={cn("text-5xl font-black tabular-nums", isOut ? textClass : "text-foreground")}
         >
           {value}
         </span>
@@ -60,7 +58,7 @@ export function Counter({
             role="status"
             className={cn(
               "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-3 py-1 text-sm font-black uppercase tracking-widest text-white shadow-lg",
-              badgeTone === "red" ? "bg-red-600" : "bg-green-600",
+              badgeTone === "red" ? "bg-destructive" : "bg-emerald-600",
             )}
           >
             {badge}
@@ -69,47 +67,49 @@ export function Counter({
       </div>
 
       {/* Indicator dots */}
-      <div className="flex items-center justify-center gap-1.5 py-0.5">
+      <div className="flex items-center justify-center gap-1 py-0.5">
         {Array.from({ length: dotCount }).map((_, i) => (
           <span
             key={i}
             className={cn(
               "h-2.5 w-2.5 rounded-full border transition-colors",
-              i < value ? cn(fillColor, "border-transparent") : "border-gray-400 bg-white",
+              i < value
+                ? cn(accentClass, "border-transparent")
+                : "border-muted-foreground/50 bg-background",
             )}
             aria-hidden="true"
           />
         ))}
       </div>
 
-      <div className="flex justify-center gap-3">
+      <div className="flex justify-center gap-2">
         <button
           type="button"
           className={cn(
-            "flex h-14 w-14 items-center justify-center rounded-full transition-colors disabled:opacity-40",
+            "flex h-12 w-12 items-center justify-center rounded-full transition-colors disabled:opacity-40",
             isOut
-              ? "bg-red-100 text-red-600 active:bg-red-200"
+              ? "bg-destructive/20 text-outs active:bg-destructive/30"
               : "bg-muted text-foreground active:bg-muted/70",
           )}
           onClick={onRemove}
           disabled={disabled || value <= 0}
           aria-label={`Decrease ${label}`}
         >
-          <Minus className="h-6 w-6" strokeWidth={3} />
+          <Minus className="h-5 w-5" strokeWidth={3} />
         </button>
         <button
           type="button"
           className={cn(
-            "flex h-14 w-14 items-center justify-center rounded-full shadow-md transition-colors disabled:opacity-40",
+            "flex h-12 w-12 items-center justify-center rounded-full shadow-md transition-colors disabled:opacity-40",
             isOut
-              ? "bg-red-600 text-white shadow-red-200 active:bg-red-700"
+              ? "bg-outs text-destructive-foreground shadow-destructive/20 active:bg-destructive/90"
               : "bg-primary text-primary-foreground active:bg-primary/90",
           )}
           onClick={onAdd}
           disabled={disabled || isAtMax}
           aria-label={`Increase ${label}`}
         >
-          <Plus className="h-6 w-6" strokeWidth={3} />
+          <Plus className="h-5 w-5" strokeWidth={3} />
         </button>
       </div>
     </div>

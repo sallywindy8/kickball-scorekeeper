@@ -23,13 +23,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kickball Umpire Tally" },
+      { title: "WAKA Scorekeeping" },
       {
         name: "description",
         content:
           "Mobile-first tally tool for kickball umpires. Track balls, strikes, fouls, outs, score, innings, and game time.",
       },
-      { property: "og:title", content: "Kickball Umpire Tally" },
+      { property: "og:title", content: "WAKA Scorekeeping" },
       {
         property: "og:description",
         content:
@@ -166,9 +166,9 @@ function Index() {
   const overtime = seconds >= FIFTY_FIVE_MINUTES && !state.isGameOver;
 
   return (
-    <main className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-1.5 bg-background p-2 text-foreground">
+    <main className="dark relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-1 bg-background p-2 text-foreground">
       <header className="text-center">
-        <h1 className="text-lg font-black uppercase tracking-widest text-foreground">
+        <h1 className="bg-gradient-to-r from-primary to-count-accent bg-clip-text text-xl font-black uppercase tracking-widest text-transparent">
           WAKA Scorekeeping
         </h1>
       </header>
@@ -230,7 +230,7 @@ function Index() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <section className="grid grid-cols-2 gap-2">
+      <section className="grid grid-cols-2 gap-1.5">
         <TeamScore
           label="Away"
           name={state.awayTeam}
@@ -257,7 +257,7 @@ function Index() {
         />
       </section>
 
-      <section className="flex items-center justify-between gap-3 rounded-2xl bg-primary p-3 text-primary-foreground shadow-sm">
+      <section className="flex items-center justify-between gap-3 rounded-2xl bg-primary p-2 text-primary-foreground shadow-sm">
         <div className="min-w-0">
           <p className="text-xs font-bold uppercase tracking-tight opacity-60">Inning</p>
           <div className="flex items-center gap-2">
@@ -315,8 +315,8 @@ function Index() {
         </div>
       </section>
 
-      <div className="flex items-center gap-2">
-        <div className="flex w-1/2 items-center justify-between gap-2 rounded-xl bg-muted px-3 py-1">
+      <div className="flex items-center gap-1.5">
+        <div className="flex w-1/2 items-center justify-between gap-2 rounded-xl border border-border bg-card px-3 py-1">
           <label
             htmlFor="final-inning"
             className="text-[11px] font-black uppercase tracking-wider text-muted-foreground"
@@ -336,7 +336,7 @@ function Index() {
         </div>
         <button
           type="button"
-          className="flex flex-1 items-center justify-center rounded-xl bg-destructive/10 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-destructive/50 shadow-sm transition-colors active:bg-destructive/20 disabled:opacity-40"
+          className="flex flex-1 items-center justify-center rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-destructive shadow-sm transition-colors active:bg-destructive/20 disabled:opacity-40"
           onClick={resetBSF}
           disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
         >
@@ -350,7 +350,7 @@ function Index() {
         </p>
       )}
 
-      <section className="grid flex-1 grid-cols-2 gap-2">
+      <section className="grid flex-1 grid-cols-2 gap-1.5">
         <Counter
           label="Balls"
           value={state.balls}
@@ -406,7 +406,7 @@ function Index() {
         />
       </section>
 
-      <section className="mt-auto flex gap-2">
+      <section className="mt-auto flex gap-1.5">
         <button
           type="button"
           className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-muted py-2.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground transition-colors active:bg-muted/70 disabled:opacity-40"
