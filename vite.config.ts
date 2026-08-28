@@ -22,30 +22,27 @@ export default defineConfig({
             name: "static-build-server-alias",
             apply: "build" as const,
             closeBundle() {
-              // The prerender step imports dist/server/server.js, but the nitro
-              // build emits index.mjs. Provide an alias so SPA shell prerendering
-              // can load the server entry.
+              // The prerender step imports dist/server/server.js and calls
+              // .fetch(req) on its default export, but the nitro build emits
+              // index.mjs whose fetch expects Cloudflare (env, ctx) arguments.
+              // Emit an alias that stubs those bindings so the SPA shell can
+              // be prerendered in a plain Node context.
               const fs = require("node:fs");
               fs.writeFileSync(
                 "dist/server/server.js",
-                'export { default } from "./index.mjs";\n',
+                [
+                  'import entry from "./index.mjs";',
+                  "const env = { ASSETS: { fetch: () => new Response(null, { status: 404 }) } };",
+                  "const ctx = { waitUntil() {}, passThroughOnException() {} };",
+                  "export default { fetch: (req) => entry.fetch(req, env, ctx) };",
+                  "",
+                ].join("\n"),
               );
             },
           },
         ]
       : [],
   },
-  // Static builds run outside the Lovable sandbox (GitHub Actions), where the
-  // default Cloudflare worker preset would require runtime bindings that do
-  // not exist during prerendering. Use a plain Node server preset instead.
-  ...(isStaticBuild
-    ? {
-        nitro: {
-          preset: "node-server",
-          output: { dir: "dist", serverDir: "dist/server", publicDir: "dist/client" },
-        },
-      }
-    : {}),
   tanstackStart: isStaticBuild
     ? {
         // Static SPA mode: prerender a static index.html shell; all app logic
