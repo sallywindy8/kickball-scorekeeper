@@ -3,8 +3,19 @@ import { useEffect } from "react";
 import { Pause, Play, RotateCcw, Undo2 } from "lucide-react";
 
 import { Counter } from "@/components/kickball/Counter";
+import { LineScore } from "@/components/kickball/LineScore";
 import { NewGameDialog } from "@/components/kickball/NewGameDialog";
 import { TeamScore } from "@/components/kickball/TeamScore";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useKickballGame } from "@/hooks/useKickballGame";
 import { useTimer } from "@/hooks/useTimer";
 import { cn } from "@/lib/utils";
@@ -32,10 +43,15 @@ export const Route = createFileRoute("/")({
 });
 
 const ORDINALS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th"] as const;
+const FIFTY_MINUTES = 50 * 60;
+const FIFTY_FIVE_MINUTES = 55 * 60;
 
 function Index() {
   const {
     state,
+    awayScore,
+    homeScore,
+    isFinalInning,
     canUndo,
     setAwayTeam,
     setHomeTeam,
@@ -51,13 +67,20 @@ function Index() {
     removeOut,
     adjustAwayScore,
     adjustHomeScore,
+    setCellRuns,
     resetBSF,
+    setFinalInning,
+    notifyFiftyMinutes,
+    dismissPrompt,
+    endHalfInning,
+    endGame,
+    confirmFinalInning,
     newGame,
     undo,
     clearFlash,
   } = useKickballGame();
 
-  const { formattedTime, isRunning, start, pause, reset: resetTimer } = useTimer();
+  const { formattedTime, seconds, isRunning, start, pause, reset: resetTimer } = useTimer();
 
   // Warn umpires if they accidentally refresh mid-game.
   useEffect(() => {
@@ -66,8 +89,8 @@ function Index() {
       state.strikes > 0 ||
       state.fouls > 0 ||
       state.outs > 0 ||
-      state.awayScore > 0 ||
-      state.homeScore > 0 ||
+      awayScore > 0 ||
+      homeScore > 0 ||
       state.inning > 1 ||
       state.isGameOver;
 
@@ -79,7 +102,7 @@ function Index() {
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [state]);
+  }, [state, awayScore, homeScore]);
 
   // Auto-clear flourish badges after 2s.
   useEffect(() => {
@@ -87,6 +110,11 @@ function Index() {
     const t = setTimeout(clearFlash, 2000);
     return () => clearTimeout(t);
   }, [state.flash, clearFlash]);
+
+  // 50-minute mark: no new inning may begin.
+  useEffect(() => {
+    if (seconds >= FIFTY_MINUTES) notifyFiftyMinutes();
+  }, [seconds, notifyFiftyMinutes]);
 
   const handleNewGame = () => {
     newGame();
@@ -99,10 +127,32 @@ function Index() {
       ? state.flash.text
       : undefined;
 
-  return (
-    <main className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-2 bg-background p-3 text-foreground">
-      <h1 className="text-center text-lg font-black tracking-tight">Umpire Tally</h1>
+  const prompt = state.prompt;
+  const promptConfirmLabel =
+    prompt?.kind === "runCap"
+      ? state.halfInning === "top"
+        ? "End half inning"
+        : "End inning"
+      : prompt?.kind === "time50"
+        ? "Yes, final inning"
+        : "End game";
+  const promptCancelLabel =
+    prompt?.kind === "runCap"
+      ? "Keep playing"
+      : prompt?.kind === "time50"
+        ? "Not yet"
+        : "Continue game";
+  const handlePromptConfirm = () => {
+    if (!prompt) return;
+    if (prompt.kind === "runCap") endHalfInning();
+    else if (prompt.kind === "time50") confirmFinalInning();
+    else endGame();
+  };
 
+  const overtime = seconds >= FIFTY_FIVE_MINUTES && !state.isGameOver;
+
+  return (
+    <main className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-1.5 bg-background p-2 text-foreground">
       {overlayFlash && (
         <div
           role="status"
@@ -114,11 +164,28 @@ function Index() {
         </div>
       )}
 
-      <section className="grid grid-cols-2 gap-3">
+      <AlertDialog open={prompt !== null}>
+        <AlertDialogContent className="max-w-sm rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{prompt?.title}</AlertDialogTitle>
+            <AlertDialogDescription>{prompt?.description}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel className="rounded-xl" onClick={dismissPrompt}>
+              {promptCancelLabel}
+            </AlertDialogCancel>
+            <AlertDialogAction className="rounded-xl" onClick={handlePromptConfirm}>
+              {promptConfirmLabel}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <section className="grid grid-cols-2 gap-2">
         <TeamScore
           label="Away"
           name={state.awayTeam}
-          score={state.awayScore}
+          score={awayScore}
           color={state.awayColor}
           onNameChange={setAwayTeam}
           onColorChange={setAwayColor}
@@ -128,7 +195,7 @@ function Index() {
         <TeamScore
           label="Home"
           name={state.homeTeam}
-          score={state.homeScore}
+          score={homeScore}
           color={state.homeColor}
           onNameChange={setHomeTeam}
           onColorChange={setHomeColor}
@@ -137,7 +204,19 @@ function Index() {
         />
       </section>
 
-      <section className="flex items-center justify-between gap-3 rounded-2xl bg-primary p-4 text-primary-foreground shadow-sm">
+      <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <LineScore
+          awayName={state.awayTeam}
+          homeName={state.homeTeam}
+          awayRuns={state.awayRuns}
+          homeRuns={state.homeRuns}
+          inning={state.inning}
+          halfInning={state.halfInning}
+          onCellChange={setCellRuns}
+        />
+      </section>
+
+      <section className="flex items-center justify-between gap-3 rounded-2xl bg-primary p-3 text-primary-foreground shadow-sm">
         <div className="min-w-0">
           <p className="text-xs font-bold uppercase tracking-tight opacity-60">Inning</p>
           <div className="flex items-center gap-2">
@@ -167,7 +246,14 @@ function Index() {
         <div className="shrink-0 text-right">
           <p className="text-xs font-bold uppercase tracking-tight opacity-60">Game Time</p>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-2xl font-bold tabular-nums">{formattedTime}</span>
+            <span
+              className={cn(
+                "font-mono text-2xl font-bold tabular-nums",
+                overtime && "text-red-300",
+              )}
+            >
+              {formattedTime}
+            </span>
             <button
               type="button"
               onClick={isRunning ? pause : start}
@@ -188,11 +274,34 @@ function Index() {
         </div>
       </section>
 
+      <div className="flex items-center justify-between gap-2 rounded-xl bg-muted px-3 py-1">
+        <label
+          htmlFor="final-inning"
+          className="text-[11px] font-black uppercase tracking-wider text-muted-foreground"
+        >
+          Final inning (no run cap)
+        </label>
+        <input
+          id="final-inning"
+          type="checkbox"
+          className="h-5 w-5 accent-primary"
+          checked={isFinalInning}
+          disabled={state.inning >= 7}
+          onChange={(e) => setFinalInning(e.target.checked)}
+        />
+      </div>
+
+      {overtime && (
+        <p className="rounded-xl bg-destructive/15 px-3 py-1.5 text-center text-[11px] font-black uppercase tracking-wider text-destructive">
+          Past 55:00 — revert score to the last completed inning
+        </p>
+      )}
+
       {state.isGameOver && (
         <div className="rounded-xl bg-primary p-3 text-center text-primary-foreground shadow-sm">
           <p className="text-base font-bold">Game Over</p>
           <p className="text-sm opacity-90">
-            Final score: {state.awayTeam} {state.awayScore} - {state.homeTeam} {state.homeScore}
+            Final score: {state.awayTeam} {awayScore} - {state.homeTeam} {homeScore}
           </p>
         </div>
       )}
