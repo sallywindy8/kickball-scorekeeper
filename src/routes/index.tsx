@@ -216,18 +216,6 @@ function Index() {
         />
       </section>
 
-      <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-        <LineScore
-          awayName={state.awayTeam}
-          homeName={state.homeTeam}
-          awayRuns={state.awayRuns}
-          homeRuns={state.homeRuns}
-          inning={state.inning}
-          halfInning={state.halfInning}
-          onCellChange={setCellRuns}
-        />
-      </section>
-
       <section className="flex items-center justify-between gap-3 rounded-2xl bg-primary p-3 text-primary-foreground shadow-sm">
         <div className="min-w-0">
           <p className="text-xs font-bold uppercase tracking-tight opacity-60">Inning</p>
@@ -359,6 +347,18 @@ function Index() {
           variant="out"
           badge={badgeFor("outs")}
           badgeTone="red"
+        />
+      </section>
+
+      <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <LineScore
+          awayName={state.awayTeam}
+          homeName={state.homeTeam}
+          awayRuns={state.awayRuns}
+          homeRuns={state.homeRuns}
+          inning={state.inning}
+          halfInning={state.halfInning}
+          onCellChange={setCellRuns}
         />
       </section>
 
