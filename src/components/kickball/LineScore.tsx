@@ -64,7 +64,9 @@ export function LineScore({
                 />
               </td>
             ))}
-            <td className="bg-muted/60 px-0 py-0.5 text-[12px] font-black text-primary">{total(row.runs)}</td>
+            <td className="bg-muted/60 px-0 py-0.5 text-[12px] font-black text-primary">
+              {total(row.runs)}
+            </td>
           </tr>
         ))}
       </tbody>

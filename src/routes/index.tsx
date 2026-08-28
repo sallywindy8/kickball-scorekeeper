@@ -168,7 +168,9 @@ function Index() {
   return (
     <main className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-1.5 bg-background p-2 text-foreground">
       <header className="text-center">
-        <h1 className="text-lg font-black uppercase tracking-widest text-primary">WAKA Scorekeeping</h1>
+        <h1 className="text-lg font-black uppercase tracking-widest text-primary">
+          WAKA Scorekeeping
+        </h1>
       </header>
       {overlayFlash && (
         <div
@@ -279,11 +281,15 @@ function Index() {
             >
               Bot
             </span>
-            <span className="text-2xl font-extrabold text-foreground">{ORDINALS[state.inning - 1]}</span>
+            <span className="text-2xl font-extrabold text-foreground">
+              {ORDINALS[state.inning - 1]}
+            </span>
           </div>
         </div>
         <div className="shrink-0 text-right">
-          <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">Game Time</p>
+          <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">
+            Game Time
+          </p>
           <div className="flex items-center gap-2">
             <span
               className={cn(
