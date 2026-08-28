@@ -152,9 +152,7 @@ function Index() {
   const overtime = seconds >= FIFTY_FIVE_MINUTES && !state.isGameOver;
 
   return (
-    <main className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-2 bg-background p-3 text-foreground">
-      <h1 className="text-center text-lg font-black tracking-tight">Umpire Tally</h1>
-
+    <main className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-2 bg-background p-2.5 text-foreground">
       {overlayFlash && (
         <div
           role="status"
@@ -218,7 +216,7 @@ function Index() {
         />
       </section>
 
-      <section className="flex items-center justify-between gap-3 rounded-2xl bg-primary p-4 text-primary-foreground shadow-sm">
+      <section className="flex items-center justify-between gap-3 rounded-2xl bg-primary p-3 text-primary-foreground shadow-sm">
         <div className="min-w-0">
           <p className="text-xs font-bold uppercase tracking-tight opacity-60">Inning</p>
           <div className="flex items-center gap-2">
@@ -276,7 +274,7 @@ function Index() {
         </div>
       </section>
 
-      <div className="flex items-center justify-between gap-2 rounded-xl bg-muted px-3 py-1.5">
+      <div className="flex items-center justify-between gap-2 rounded-xl bg-muted px-3 py-1">
         <label
           htmlFor="final-inning"
           className="text-[11px] font-black uppercase tracking-wider text-muted-foreground"
