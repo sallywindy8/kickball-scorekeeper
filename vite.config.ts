@@ -20,16 +20,18 @@ export default defineConfig({
   // GitHub Pages is a static host. Its dedicated Nitro preset generates the
   // static artifact without requiring a deployable server bundle. Lovable's
   // normal preview and production builds continue using the default runtime.
-  nitro: isStaticBuild
+  ...(isStaticBuild
     ? {
-        preset: "github-pages",
-        output: {
-          dir: "dist",
-          publicDir: "dist/client",
-          serverDir: "dist/server",
+        nitro: {
+          preset: "github-pages",
+          output: {
+            dir: "dist",
+            publicDir: "dist/client",
+            serverDir: "dist/server",
+          },
         },
       }
-    : undefined,
+    : {}),
   tanstackStart: isStaticBuild
     ? {
         // Static SPA mode: prerender a static index.html shell; all app logic
