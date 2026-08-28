@@ -33,8 +33,9 @@ export interface GameState {
   strikes: number;
   fouls: number;
   outs: number;
-  /** Consecutive balls in the current at-bat (streak breaks on strike/foul). */
-  ballStreak: number;
+  /** Ordered pitches in the current at-bat; the walk streak is derived from it
+   *  so erasing a strike/foul restores the true consecutive-ball count. */
+  pitchLog: ("ball" | "strike" | "foul")[];
   isGameOver: boolean;
   /** Ump-flagged (or clock-forced) final inning: suspends the 7-run cap. */
   finalInning: boolean;
@@ -67,7 +68,7 @@ const initialState: GameState = {
   strikes: 0,
   fouls: 0,
   outs: 0,
-  ballStreak: 0,
+  pitchLog: [],
   isGameOver: false,
   finalInning: false,
   flash: null,
