@@ -11,6 +11,8 @@ interface CounterProps {
   variant?: "default" | "out";
   /** Temporary badge shown over the count, e.g. "Walk" on the 4th ball. */
   badge?: string | undefined;
+  /** Badge color tone. */
+  badgeTone?: "green" | "red";
 }
 
 export function Counter({
@@ -22,6 +24,7 @@ export function Counter({
   disabled = false,
   variant = "default",
   badge,
+  badgeTone = "green",
 }: CounterProps) {
   const isAtMax = max !== undefined && value >= max;
   const isOut = variant === "out";
@@ -29,7 +32,7 @@ export function Counter({
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col items-center justify-center gap-2 rounded-3xl border p-3 shadow-sm",
+        "relative flex h-full flex-col items-center justify-center gap-1 rounded-3xl border p-2 shadow-sm",
         isOut ? "border-red-200 bg-red-50" : "border-border bg-card",
       )}
     >
@@ -41,27 +44,32 @@ export function Counter({
       >
         {label}
       </span>
-      <span
-        className={cn(
-          "text-5xl font-black tabular-nums",
-          isOut ? "text-red-600" : "text-foreground",
-        )}
-      >
-        {value}
-      </span>
-      {badge && (
+      <div className="relative flex items-center justify-center">
         <span
-          role="status"
-          className="absolute -top-3 left-1/2 -translate-x-1/2 animate-bounce whitespace-nowrap rounded-full bg-primary px-3 py-0.5 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-md"
+          className={cn(
+            "text-5xl font-black tabular-nums",
+            isOut ? "text-red-600" : "text-foreground",
+          )}
         >
-          {badge}
+          {value}
         </span>
-      )}
-      <div className="flex justify-center gap-2 pt-1">
+        {badge && (
+          <span
+            role="status"
+            className={cn(
+              "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-scale-in whitespace-nowrap rounded-full px-3 py-1 text-sm font-black uppercase tracking-widest text-white shadow-lg",
+              badgeTone === "red" ? "bg-red-600" : "bg-green-600",
+            )}
+          >
+            {badge}
+          </span>
+        )}
+      </div>
+      <div className="flex justify-center gap-3">
         <button
           type="button"
           className={cn(
-            "flex h-12 w-12 items-center justify-center rounded-full transition-colors disabled:opacity-40",
+            "flex h-14 w-14 items-center justify-center rounded-full transition-colors disabled:opacity-40",
             isOut
               ? "bg-red-100 text-red-600 active:bg-red-200"
               : "bg-muted text-foreground active:bg-muted/70",
@@ -70,12 +78,12 @@ export function Counter({
           disabled={disabled || value <= 0}
           aria-label={`Decrease ${label}`}
         >
-          <Minus className="h-5 w-5" strokeWidth={3} />
+          <Minus className="h-6 w-6" strokeWidth={3} />
         </button>
         <button
           type="button"
           className={cn(
-            "flex h-12 w-12 items-center justify-center rounded-full shadow-md transition-colors disabled:opacity-40",
+            "flex h-14 w-14 items-center justify-center rounded-full shadow-md transition-colors disabled:opacity-40",
             isOut
               ? "bg-red-600 text-white shadow-red-200 active:bg-red-700"
               : "bg-primary text-primary-foreground active:bg-primary/90",
@@ -84,7 +92,7 @@ export function Counter({
           disabled={disabled || isAtMax}
           aria-label={`Increase ${label}`}
         >
-          <Plus className="h-5 w-5" strokeWidth={3} />
+          <Plus className="h-6 w-6" strokeWidth={3} />
         </button>
       </div>
     </div>
