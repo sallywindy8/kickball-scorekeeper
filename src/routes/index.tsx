@@ -87,10 +87,10 @@ function Index() {
   const timerStarted = seconds > 0 || isRunning;
 
   // Fail-safe: if the ump starts counting/scoring before starting the timer,
-  // nudge them once per action until the clock is running.
+  // or while the timer is paused, nudge them once per action until the clock is running.
   const [timerReminder, setTimerReminder] = useState(false);
   const guardTimer = (action: () => void) => () => {
-    if (!timerStarted && !state.isGameOver) setTimerReminder(true);
+    if (!isRunning && !state.isGameOver) setTimerReminder(true);
     action();
   };
 
@@ -224,9 +224,13 @@ function Index() {
       <AlertDialog open={timerReminder} onOpenChange={setTimerReminder}>
         <AlertDialogContent className="max-w-sm rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Timer not started</AlertDialogTitle>
+            <AlertDialogTitle>
+              {seconds > 0 ? "Timer is paused" : "Timer not started"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              The game timer has not been started yet. Would you like to start it now?
+              {seconds > 0
+                ? "The game timer is paused. Would you like to continue it now?"
+                : "The game timer has not been started yet. Would you like to start it now?"}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2">
@@ -238,7 +242,7 @@ function Index() {
                 setTimerReminder(false);
               }}
             >
-              Yes, start timer
+              {seconds > 0 ? "Yes, continue timer" : "Yes, start timer"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
