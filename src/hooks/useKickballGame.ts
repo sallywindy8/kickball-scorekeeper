@@ -106,21 +106,6 @@ function advanceHalf(prev: GameState): GameState {
     pitchLog: [],
     prompt: null,
   };
-}
-
-/** Consecutive balls at the end of the current at-bat's pitch log. */
-function currentBallStreak(log: GameState["pitchLog"]): number {
-  let streak = 0;
-  for (let i = log.length - 1; i >= 0 && log[i] === "ball"; i--) streak++;
-  return streak;
-}
-
-/** Remove the most recent occurrence of a pitch from the log. */
-function removeLast(log: GameState["pitchLog"], pitch: "ball" | "strike" | "foul") {
-  const idx = log.lastIndexOf(pitch);
-  if (idx === -1) return log;
-  return [...log.slice(0, idx), ...log.slice(idx + 1)];
-}
   if (prev.halfInning === "top") {
     return { ...cleared, halfInning: "bottom" };
   }
