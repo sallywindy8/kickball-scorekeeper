@@ -35,6 +35,17 @@ export default defineConfig({
         ]
       : [],
   },
+  // Static builds run outside the Lovable sandbox (GitHub Actions), where the
+  // default Cloudflare worker preset would require runtime bindings that do
+  // not exist during prerendering. Use a plain Node server preset instead.
+  ...(isStaticBuild
+    ? {
+        nitro: {
+          preset: "node-server",
+          output: { dir: "dist", serverDir: "dist/server", publicDir: "dist/client" },
+        },
+      }
+    : {}),
   tanstackStart: isStaticBuild
     ? {
         // Static SPA mode: prerender a static index.html shell; all app logic
