@@ -163,7 +163,9 @@ function Index() {
       {state.isGameOver && (
         <div className="rounded-xl bg-primary p-4 text-center text-primary-foreground shadow-sm">
           <p className="text-lg font-bold">Game Over</p>
-          <p className="text-sm opacity-90">Final score: {state.awayTeam} {state.awayScore} - {state.homeTeam} {state.homeScore}</p>
+          <p className="text-sm opacity-90">
+            Final score: {state.awayTeam} {state.awayScore} - {state.homeTeam} {state.homeScore}
+          </p>
         </div>
       )}
 

@@ -50,10 +50,7 @@ export function Counter({
           type="button"
           variant="outline"
           size="icon"
-          className={cn(
-            "h-14 w-14 rounded-full text-2xl",
-            variantClasses[variant],
-          )}
+          className={cn("h-14 w-14 rounded-full text-2xl", variantClasses[variant])}
           onClick={onRemove}
           disabled={disabled || value <= 0}
           aria-label={`Decrease ${label}`}
@@ -64,10 +61,7 @@ export function Counter({
           type="button"
           variant="outline"
           size="icon"
-          className={cn(
-            "h-14 w-14 rounded-full text-2xl",
-            variantClasses[variant],
-          )}
+          className={cn("h-14 w-14 rounded-full text-2xl", variantClasses[variant])}
           onClick={onAdd}
           disabled={disabled || isAtMax}
           aria-label={`Increase ${label}`}
