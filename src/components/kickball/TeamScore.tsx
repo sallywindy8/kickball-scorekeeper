@@ -14,6 +14,7 @@ interface TeamScoreProps {
   onAdjustScore: (delta: number) => void;
   disabled?: boolean;
   isKicking?: boolean;
+  dimInactive?: boolean;
 }
 
 export function TeamScore({
@@ -26,6 +27,7 @@ export function TeamScore({
   onAdjustScore,
   disabled = false,
   isKicking = true,
+  dimInactive = false,
 }: TeamScoreProps) {
   const [open, setOpen] = useState(false);
   const fg = color ? readableText(color) : undefined;
@@ -36,7 +38,7 @@ export function TeamScore({
     <div
       className={cn(
         "flex flex-1 flex-col items-center gap-1 rounded-2xl border border-border bg-card p-2 shadow-sm transition-opacity",
-        !isKicking && "opacity-25",
+        !isKicking && dimInactive && "opacity-25",
       )}
       style={cardStyle}
     >

@@ -209,6 +209,7 @@ function Index() {
           onAdjustScore={adjustAwayScore}
           disabled={state.isGameOver}
           isKicking={state.halfInning === "top"}
+          dimInactive={timerStarted}
         />
         <TeamScore
           label="Home"
@@ -220,6 +221,7 @@ function Index() {
           onAdjustScore={adjustHomeScore}
           disabled={state.isGameOver}
           isKicking={state.halfInning === "bottom"}
+          dimInactive={timerStarted}
         />
       </section>
 
@@ -301,7 +303,7 @@ function Index() {
       <div className="flex justify-end">
         <button
           type="button"
-          className="rounded-lg bg-destructive/15 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-destructive shadow-sm transition-colors active:bg-destructive/25 disabled:opacity-40"
+          className="rounded-lg bg-destructive/10 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-destructive/70 shadow-sm transition-colors active:bg-destructive/20 disabled:opacity-40"
           onClick={resetBSF}
           disabled={state.balls === 0 && state.strikes === 0 && state.fouls === 0}
         >
