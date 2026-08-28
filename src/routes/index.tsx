@@ -167,10 +167,18 @@ function Index() {
 
   return (
     <main className="dark relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-1 bg-background p-2 text-foreground">
-      <header className="text-center">
+      <header className="flex items-center justify-between gap-2">
         <h1 className="bg-gradient-to-r from-primary to-count-accent bg-clip-text text-xl font-black uppercase tracking-widest text-transparent">
           WAKA Scorekeeping
         </h1>
+        <a
+          href="https://kickball.com/rules/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="shrink-0 rounded-lg bg-muted px-2 py-1 text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
+        >
+          League Rules
+        </a>
       </header>
       {overlayFlash && (
         <div
@@ -316,10 +324,10 @@ function Index() {
       </section>
 
       <div className="flex items-center gap-1.5">
-        <div className="flex w-1/2 items-center justify-between gap-2 rounded-xl border border-border bg-card px-3 py-1">
+        <div className="flex w-1/2 items-center justify-between gap-2 rounded-xl border border-secondary-foreground/20 bg-secondary px-3 py-1">
           <label
             htmlFor="final-inning"
-            className="text-[11px] font-black uppercase tracking-wider text-muted-foreground"
+            className="text-[11px] font-black uppercase tracking-wider text-secondary-foreground"
           >
             Final inning
             <br />

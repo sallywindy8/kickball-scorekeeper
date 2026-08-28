@@ -75,7 +75,7 @@ export function Counter({
               "h-2.5 w-2.5 rounded-full border transition-colors",
               i < value
                 ? cn(accentClass, "border-transparent")
-                : "border-muted-foreground/50 bg-background",
+                : "border-muted-foreground/60 bg-muted-foreground/25",
             )}
             aria-hidden="true"
           />

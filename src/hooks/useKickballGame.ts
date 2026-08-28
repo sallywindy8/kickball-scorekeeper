@@ -58,8 +58,8 @@ const ORDINALS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th"] as const;
 const zeros = () => Array.from({ length: MAX_INNINGS }, () => 0);
 
 const initialState: GameState = {
-  awayTeam: "Away",
-  homeTeam: "Home",
+  awayTeam: "",
+  homeTeam: "",
   awayColor: "",
   homeColor: "",
   awayRuns: zeros(),
