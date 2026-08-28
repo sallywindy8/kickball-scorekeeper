@@ -355,14 +355,34 @@ function Index() {
             >
               {isRunning ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
             </button>
-            <button
-              type="button"
-              onClick={resetTimer}
-              aria-label="Reset timer"
-              className="rounded-full bg-primary-foreground/15 p-2 transition-colors hover:bg-primary-foreground/25"
-            >
-              <RotateCcw className="h-5 w-5" />
-            </button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Reset timer"
+                  className="rounded-full bg-primary-foreground/15 p-2 transition-colors hover:bg-primary-foreground/25"
+                >
+                  <RotateCcw className="h-5 w-5" />
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="max-w-sm rounded-2xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset the timer?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will clear the game timer and cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="gap-2">
+                  <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={resetTimer}
+                    className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Reset Timer
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </section>
