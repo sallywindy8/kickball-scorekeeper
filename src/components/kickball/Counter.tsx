@@ -29,13 +29,13 @@ export function Counter({
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col items-center justify-center rounded-3xl border p-2 shadow-sm",
+        "relative flex h-full flex-col items-center justify-center gap-2 rounded-3xl border p-3 shadow-sm",
         isOut ? "border-red-200 bg-red-50" : "border-border bg-card",
       )}
     >
       <span
         className={cn(
-          "text-sm font-black uppercase tracking-[0.14em]",
+          "text-base font-black uppercase tracking-[0.14em]",
           isOut ? "text-red-600" : "text-muted-foreground",
         )}
       >
@@ -43,7 +43,7 @@ export function Counter({
       </span>
       <span
         className={cn(
-          "text-4xl font-black tabular-nums",
+          "text-5xl font-black tabular-nums",
           isOut ? "text-red-600" : "text-foreground",
         )}
       >
@@ -61,7 +61,7 @@ export function Counter({
         <button
           type="button"
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-full transition-colors disabled:opacity-40",
+            "flex h-12 w-12 items-center justify-center rounded-full transition-colors disabled:opacity-40",
             isOut
               ? "bg-red-100 text-red-600 active:bg-red-200"
               : "bg-muted text-foreground active:bg-muted/70",
@@ -70,12 +70,12 @@ export function Counter({
           disabled={disabled || value <= 0}
           aria-label={`Decrease ${label}`}
         >
-          <Minus className="h-4 w-4" strokeWidth={3} />
+          <Minus className="h-5 w-5" strokeWidth={3} />
         </button>
         <button
           type="button"
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-full shadow-md transition-colors disabled:opacity-40",
+            "flex h-12 w-12 items-center justify-center rounded-full shadow-md transition-colors disabled:opacity-40",
             isOut
               ? "bg-red-600 text-white shadow-red-200 active:bg-red-700"
               : "bg-primary text-primary-foreground active:bg-primary/90",
@@ -84,7 +84,7 @@ export function Counter({
           disabled={disabled || isAtMax}
           aria-label={`Increase ${label}`}
         >
-          <Plus className="h-4 w-4" strokeWidth={3} />
+          <Plus className="h-5 w-5" strokeWidth={3} />
         </button>
       </div>
     </div>
