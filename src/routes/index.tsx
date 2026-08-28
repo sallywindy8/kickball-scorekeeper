@@ -212,10 +212,7 @@ function Index() {
             Score a new game?
           </p>
           <AlertDialogFooter className="gap-2">
-            <AlertDialogCancel
-              onClick={resumeGame}
-              className="rounded-xl"
-            >
+            <AlertDialogCancel onClick={resumeGame} className="rounded-xl">
               Go back to score
             </AlertDialogCancel>
             <AlertDialogAction
