@@ -494,9 +494,9 @@ export function useKickballGame() {
         ...prev,
         prompt: {
           kind: "time50",
-          title: "50 minute mark",
+          title: "Time expired (50:00)",
           description:
-            "No new inning may begin after 50 minutes. Mark the current inning as the final inning? The 7-run cap does not apply in the final inning.",
+            "No new innings should start after 50 minutes. End the game now, or continue into a new inning?",
         },
         answered: [...prev.answered, "time50"],
       };
