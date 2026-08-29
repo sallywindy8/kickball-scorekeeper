@@ -219,7 +219,14 @@ function Index() {
             <AlertDialogCancel className="rounded-xl" onClick={dismissPrompt}>
               {promptCancelLabel}
             </AlertDialogCancel>
-            <AlertDialogAction className="rounded-xl" onClick={handlePromptConfirm}>
+            <AlertDialogAction
+              className={cn(
+                "rounded-xl",
+                prompt?.kind !== "runCap" &&
+                  "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+              )}
+              onClick={handlePromptConfirm}
+            >
               {promptConfirmLabel}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -230,10 +237,10 @@ function Index() {
         <AlertDialogContent className="max-w-sm rounded-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {seconds > 0 ? "Timer is paused" : "Timer not started"}
+              {seconds < FIFTY_MINUTES ? "Timer is paused" : "Timer not started"}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {seconds > 0
+              {seconds < FIFTY_MINUTES
                 ? "The game timer is paused. Would you like to continue it now?"
                 : "The game timer has not been started yet. Would you like to start it now?"}
             </AlertDialogDescription>
