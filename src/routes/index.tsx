@@ -253,7 +253,7 @@ function Index() {
                 setTimerReminder(false);
               }}
             >
-              {seconds > 0 ? "Yes, continue timer" : "Yes, start timer"}
+              {seconds === FIFTY_MINUTES ? "Yes, start timer" : "Yes, continue timer"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
