@@ -77,7 +77,6 @@ function Index() {
     endHalfInning,
     endGame,
     resumeGame,
-    confirmFinalInning,
     newGame,
     undo,
     clearFlash,
