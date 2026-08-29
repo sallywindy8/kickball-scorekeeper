@@ -44,7 +44,7 @@ export const Route = createFileRoute("/")({
 
 const ORDINALS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th"] as const;
 const FIFTY_MINUTES = 50 * 60;
-const FIFTY_FIVE_MINUTES = 55 * 60;
+const FIVE_MINUTES = 5 * 60;
 
 function Index() {
   const {
@@ -84,7 +84,7 @@ function Index() {
   } = useKickballGame();
 
   const { formattedTime, seconds, isRunning, start, pause, reset: resetTimer } = useTimer();
-  const timerStarted = seconds > 0 || isRunning;
+  const timerStarted = seconds < FIFTY_MINUTES || isRunning;
 
   // Fail-safe: if the ump starts counting/scoring before starting the timer,
   // or while the timer is paused, nudge them once per action until the clock is running.
@@ -123,14 +123,14 @@ function Index() {
     return () => clearTimeout(t);
   }, [state.flash, clearFlash]);
 
-  // 50-minute mark: no new inning may begin.
+  // 50-minute mark (countdown hits 00:00): no new inning may begin.
   useEffect(() => {
-    if (seconds >= FIFTY_MINUTES) notifyFiftyMinutes();
+    if (seconds <= 0) notifyFiftyMinutes();
   }, [seconds, notifyFiftyMinutes]);
 
-  // 55-minute mark: the in-progress inning cannot count.
+  // 55-minute mark (-05:00 on the countdown): the in-progress inning cannot count.
   useEffect(() => {
-    if (seconds >= FIFTY_FIVE_MINUTES) notifyFiftyFiveMinutes();
+    if (seconds <= -FIVE_MINUTES) notifyFiftyFiveMinutes();
   }, [seconds, notifyFiftyFiveMinutes]);
 
   // Stop the clock once the game has ended.
@@ -156,7 +156,7 @@ function Index() {
         ? "End half inning"
         : "End inning"
       : prompt?.kind === "time50"
-        ? "Yes, final inning"
+        ? "End game"
         : prompt?.kind === "time55"
           ? "Revert & end game"
           : "End game";
@@ -164,19 +164,19 @@ function Index() {
     prompt?.kind === "runCap"
       ? "Keep playing"
       : prompt?.kind === "time50"
-        ? "Not yet"
+        ? "Continue into new inning"
         : prompt?.kind === "time55"
           ? "Keep playing"
           : "Continue game";
   const handlePromptConfirm = () => {
     if (!prompt) return;
     if (prompt.kind === "runCap") endHalfInning();
-    else if (prompt.kind === "time50") confirmFinalInning();
+    else if (prompt.kind === "time50") endGame();
     else if (prompt.kind === "time55") revertToPreviousInning();
     else endGame();
   };
 
-  const overtime = seconds >= FIFTY_FIVE_MINUTES && !state.isGameOver;
+  const overtime = seconds <= -FIVE_MINUTES && !state.isGameOver;
 
   return (
     <main className="dark relative mx-auto flex min-h-dvh w-full max-w-md flex-col gap-1 bg-background p-2 text-foreground">
