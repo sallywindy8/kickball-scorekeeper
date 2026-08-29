@@ -2,15 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 
 const STORAGE_KEY = "kickball-timer";
 const REFRESH_KEY = "kickball-timer-refresh";
+const GAME_LENGTH = 50 * 60;
 
 interface TimerState {
-  /** Seconds banked before the current run. */
-  accumulated: number;
+  /** Seconds remaining, banked before the current run. */
+  remaining: number;
   /** Epoch ms the current run started, or null when paused. */
   runningSince: number | null;
 }
 
-const initialTimer: TimerState = { accumulated: 0, runningSince: null };
+const initialTimer: TimerState = { remaining: GAME_LENGTH, runningSince: null };
 
 function loadTimer(): TimerState | null {
   if (typeof window === "undefined") return null;
@@ -26,9 +27,9 @@ function loadTimer(): TimerState | null {
     }
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<TimerState>;
-    if (typeof parsed.accumulated !== "number") return null;
+    if (typeof parsed.remaining !== "number") return null;
     return {
-      accumulated: parsed.accumulated,
+      remaining: parsed.remaining,
       runningSince: typeof parsed.runningSince === "number" ? parsed.runningSince : null,
     };
   } catch {
@@ -36,23 +37,20 @@ function loadTimer(): TimerState | null {
   }
 }
 
-const elapsed = (t: TimerState) =>
-  Math.max(
-    0,
-    Math.floor(t.accumulated + (t.runningSince ? (Date.now() - t.runningSince) / 1000 : 0)),
-  );
+const remaining = (t: TimerState) =>
+  t.remaining - (t.runningSince ? (Date.now() - t.runningSince) / 1000 : 0);
 
 export function useTimer() {
   const [timer, setTimer] = useState<TimerState>(initialTimer);
   const [hydrated, setHydrated] = useState(false);
-  const [seconds, setSeconds] = useState(0);
+  const [seconds, setSeconds] = useState(GAME_LENGTH);
 
   // Restore a running clock after a refresh or app switch.
   useEffect(() => {
     const saved = loadTimer();
     if (saved) {
       setTimer(saved);
-      setSeconds(elapsed(saved));
+      setSeconds(Math.floor(remaining(saved)));
     }
     setHydrated(true);
   }, []);
@@ -85,9 +83,9 @@ export function useTimer() {
 
   // Tick from wall-clock time so a backgrounded tab stays accurate.
   useEffect(() => {
-    setSeconds(elapsed(timer));
+    setSeconds(Math.floor(remaining(timer)));
     if (!timer.runningSince) return;
-    const interval = setInterval(() => setSeconds(elapsed(timer)), 500);
+    const interval = setInterval(() => setSeconds(Math.floor(remaining(timer))), 500);
     return () => clearInterval(interval);
   }, [timer]);
 
@@ -96,17 +94,19 @@ export function useTimer() {
   }, []);
 
   const pause = useCallback(() => {
-    setTimer((t) => (t.runningSince ? { accumulated: elapsed(t), runningSince: null } : t));
+    setTimer((t) => (t.runningSince ? { remaining: remaining(t), runningSince: null } : t));
   }, []);
 
   const reset = useCallback(() => {
     setTimer(initialTimer);
-    setSeconds(0);
+    setSeconds(GAME_LENGTH);
   }, []);
 
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  const formattedTime = `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+  // Past 00:00 the clock runs negative (overtime), shown as -MM:SS.
+  const abs = Math.abs(seconds);
+  const minutes = Math.floor(abs / 60);
+  const remainingSeconds = abs % 60;
+  const formattedTime = `${seconds < 0 ? "-" : ""}${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
 
   return {
     seconds,
